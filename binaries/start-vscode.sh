@@ -13,6 +13,9 @@ if [[ -d /etc/home ]]; then
 	cp -rf /etc/home/.[^.]* ~
 fi
 
+# Start SSH
+sudo service ssh start
+
 # Set git config to use environment variables.
 # All of these variables can be set/overridden using the following naming convention:
 # GIT_{CONFIG_NAME}_{CONFIG_KEY} where:
