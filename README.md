@@ -10,9 +10,10 @@ This is a Dockerised version of Visual Studio Code. It includes basic requiremen
 docker build -t vscode .
 ```
 
-#### Arguments
+#### Build Arguments
 
 During the build process, you can pass the following arguments to customise the image:
+
 - `USERNAME`: The username to use when running the container. Defaults to `vscode`.
 - `DOCKER_GID`: The GID of the Docker group on the host machine. Defaults to `999` (the default GID of the Docker group on most systems).
 
@@ -38,9 +39,12 @@ docker run \
 
 This command will start the container and expose ports `8000` and `2222` for the web server and SSH server respectively. It will also mount the Docker socket and a workspace directory on the host machine to the container to be able to access the host's Docker daemon and workspace files.
 
-#### Arguments
+The image is availlable on [Docker Hub](https://hub.docker.com/r/pixnyb/code).
+
+#### Environment Variables
 
 When running the container, you can pass the following environment variables to customise the container:
+
 - `VSCODE_KEYRING_PASS`: The password to use for the keyring. (Required)
 - `GH_TOKEN`: The GitHub personal access token to use for authentication in the GitHub CLI. (Optional)
 
@@ -83,7 +87,7 @@ This will open Visual Studio Code in your local VS Code instance.
 You can customise the Docker image to include additional tools and extensions specific to your needs. To do this, you can mount various files and directories to the container during runtime.
 
 - `/etc/home`: Files and directories to be copied to the home directory of the user.
-- `/usr/${USERNAME}/.local/bin`: Shell scripts to be included in the PATH of the user.
+- `/home/${USERNAME}/.local/bin`: Shell scripts to be included in the PATH of the user.
 - `/usr/local/bin/initialise-vscode.sh`: A shell script to be run when the container starts. This can be used to install additional tools and extensions.
 
 > [!NOTE] The container comes with sudo installed and a non-root user with sudo privileges.
@@ -118,10 +122,10 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - config:/home/pixnyb/.vscode-server
-      - ssh-keys:/home/pixnyb/.ssh
+      - config:/home/vscode/.vscode-server
+      - ssh-keys:/home/vscode/.ssh
       - home:/etc/home
-      - workspaces:/home/pixnyb/projects
+      - workspaces:/home/vscode/projects
 
 volumes:
   config:
@@ -132,3 +136,4 @@ volumes:
     driver: local
   workspaces:
     driver: local
+```
