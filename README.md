@@ -69,7 +69,8 @@ To access the container, you can use the following methods:
 
 You can access the container through the web server by navigating to `http://localhost:8000` in your web browser. This will open Visual Studio Code in your web browser.
 
-> [!WARNING] The web server is not secure and should not be exposed to the public internet without additional security measures.
+> [!WARNING]
+> The web server is not secure and should not be exposed to the public internet without additional security measures.
 > Make sure to secure the web server before exposing it to the public internet (e.g. by using a reverse proxy with HTTPS and authentication).
 
 #### SSH Server
@@ -90,7 +91,8 @@ You can customise the Docker image to include additional tools and extensions sp
 - `/home/${USERNAME}/.local/bin`: Shell scripts to be included in the PATH of the user.
 - `/usr/local/bin/initialise-vscode.sh`: A shell script to be run when the container starts. This can be used to install additional tools and extensions.
 
-> [!NOTE] The container comes with sudo installed and a non-root user with sudo privileges.
+> [!NOTE]
+> The container comes with sudo installed and a non-root user with sudo privileges.
 > You can use this user to install additional tools and extensions during runtime.
 
 #### Recommended Volumes
