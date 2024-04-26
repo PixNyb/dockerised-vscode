@@ -64,7 +64,7 @@ if [[ -n ${GPG_SECRET_KEY-} ]]; then
 			gpg --armor --export "${default_key_id}" >"${key_file}"
 
 			# Add the key to GitHub
-			gh gpg-key add "${key_file}" --title "GPG key for ${hostname}"
+			gh gpg-key add "${key_file}" --title "GPG key for $(hostname)"
 		fi
 	fi
 
