@@ -24,7 +24,7 @@ sudo service ssh start
 # For example, to set the global user.name config, you would set the GIT_GLOBAL_USER_NAME environment variable.
 
 # Get all the environment variables that start with GIT_
-env | grep -o '^GIT_[^=]\+' | while read -r git_config; do
+while env | grep -o '^GIT_[^=]\+' | while read -r git_config; do
 	# Get the value of the environment variable
 	git_config_value="${!git_config}"
 	# Get the config name and key
@@ -33,6 +33,45 @@ env | grep -o '^GIT_[^=]\+' | while read -r git_config; do
 	# Set the git config
 	git config --"${git_config_name}" "${git_config_key}" "${git_config_value}"
 done
+
+# If the GITHUB_TOKEN or GH_TOKEN environment variables are set, run `gh auth setup-git` in order to allow for gh to authenticate git
+if [[ -n ${GITHUB_TOKEN-} || -n ${GH_TOKEN-} ]]; then
+	gh auth setup-git
+fi
+
+# Import the GPG key from the GPG_SECRET_KEY environment variable. If the GPG_PASSPHRASE environment variable is set, use it to unlock the GPG key.
+if [[ -n ${GPG_SECRET_KEY-} ]]; then
+	echo "${GPG_SECRET_KEY}" | base64 -d | gpg --batch --import
+	if [[ -n ${GPG_PASSPHRASE-} ]]; then
+		echo "${GPG_PASSPHRASE}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --output /dev/null --sign
+	fi
+
+	# Set the GPG_TTY environment variable to prevent pinentry from hanging
+	export GPG_TTY=$(tty)
+
+	# Set the default GPG key to the key imported
+	default_key=$(gpg --list-secret-keys --keyid-format LONG
+
+	# Get the key ID of the default key
+	default_key_id=$(echo "${default_key}" | grep -oP 'sec\s+\K[0-9A-F]+')
+
+	# Check if the key is available in gh cli. If it's not added, add it.
+	if [[ -n ${GITHUB_TOKEN-} || -n ${GH_TOKEN-} ]]; then
+		gh_key=$(gh api /user/gpg_keys --paginate --jq ".[] | select(.key_id == \"${default_key_id}\")")
+		if [[ -z ${gh_key} ]]; then
+			# Get the key file
+			key_file=$(mktemp)
+			gpg --armor --export "${default_key_id}" >"${key_file}"
+
+			# Add the key to GitHub
+			gh gpg-key add "${key_file}" --title "GPG key for ${hostname}"
+		fi
+	fi
+
+	# Set git config to verify commits with the default GPG key
+	git config --global user.signingkey "${default_key_id}"
+	git config --global commit.gpgsign true
+fi
 
 # Run a dbus session, which unlocks the gnome-keyring and runs the VS Code Server inside of it
 dbus-run-session -- sh -c "(echo ${VSCODE_KEYRING_PASS} | gnome-keyring-daemon --unlock) \

@@ -46,7 +46,12 @@ The image is availlable on [Docker Hub](https://hub.docker.com/r/pixnyb/code).
 When running the container, you can pass the following environment variables to customise the container:
 
 - `VSCODE_KEYRING_PASS`: The password to use for the keyring. (Required)
-- `GH_TOKEN`: The GitHub personal access token to use for authentication in the GitHub CLI. (Optional)
+- `GH_TOKEN`: The GitHub personal access token to use for authentication in the GitHub CLI and in turn git. (Optional)
+- `GPG_SECRET_KEY`: The GPG secret key to use for signing commits. (Optional)
+- `GPG_PASSPHRASE`: The passphrase for the GPG secret key. (Optional)
+
+> [!NOTE]
+> The GPG secret key is expected to be the contents of a GPG secret key file. If it's not present in GitHub, and a GitHub personal access token is provided, the GPG key will be added to GitHub with the title `GPG key for ${hostname}`.
 
 ##### Git Configuration
 
