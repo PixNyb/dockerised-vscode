@@ -24,7 +24,7 @@ sudo service ssh start
 # For example, to set the global user.name config, you would set the GIT_GLOBAL_USER_NAME environment variable.
 
 # Get all the environment variables that start with GIT_
-while env | grep -o '^GIT_[^=]\+' | while read -r git_config; do
+env | grep -o '^GIT_[^=]\+' | while read -r git_config; do
 	# Get the value of the environment variable
 	git_config_value="${!git_config}"
 	# Get the config name and key
