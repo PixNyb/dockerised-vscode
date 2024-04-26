@@ -47,8 +47,16 @@ When running the container, you can pass the following environment variables to 
 
 - `VSCODE_KEYRING_PASS`: The password to use for the keyring. (Required)
 - `GH_TOKEN`: The GitHub personal access token to use for authentication in the GitHub CLI and in turn git. (Optional)
-- `GPG_SECRET_KEY`: The GPG secret key to use for signing commits. (Optional)
+- `GPG_SECRET_KEY`: The GPG secret key to use for signing commits. (Optional, base64)
 - `GPG_PASSPHRASE`: The passphrase for the GPG secret key. (Optional)
+
+> [!NOTE]
+> In order to insert a GPG secret key, you need to base64 encode the contents of the GPG secret key file and pass it as the `GPG_SECRET_KEY` environment variable.
+> You can use the following command to generate a new GPG secret key and base64 encode it:
+>
+> ```bash
+> gpg --gen-key && gpg --export-secret-keys --armor $(gpg --list-secret-keys --keyid-format LONG | grep sec | awk '{print $2}' | cut -d'/' -f2) | base64 -w 0
+> ```
 
 > [!NOTE]
 > The GPG secret key is expected to be the contents of a GPG secret key file. If it's not present in GitHub, and a GitHub personal access token is provided, the GPG key will be added to GitHub with the title `GPG key for ${hostname}`.
@@ -144,3 +152,4 @@ volumes:
   workspaces:
     driver: local
 ```
+
