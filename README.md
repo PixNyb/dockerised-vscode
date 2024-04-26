@@ -49,6 +49,8 @@ When running the container, you can pass the following environment variables to 
 - `GH_TOKEN`: The GitHub personal access token to use for authentication in the GitHub CLI and in turn git. (Optional)
 - `GPG_SECRET_KEY`: The GPG secret key to use for signing commits. (Optional, base64)
 - `GPG_PASSPHRASE`: The passphrase for the GPG secret key. (Optional)
+- `GIT_REPO_URL`: The URL of the Git repository to clone when the container starts. (Optional)
+- `GIT_FOLDER`: The folder to clone the Git repository into. (e.g. ~/projects) (Optional)
 
 > [!NOTE]
 > In order to insert a GPG secret key, you need to base64 encode the contents of the GPG secret key file and pass it as the `GPG_SECRET_KEY` environment variable.
@@ -152,4 +154,6 @@ volumes:
   workspaces:
     driver: local
 ```
+
+
 

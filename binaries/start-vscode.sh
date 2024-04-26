@@ -73,6 +73,14 @@ if [[ -n ${GPG_SECRET_KEY-} ]]; then
 	git config --global commit.gpgsign true
 fi
 
+# If the container has the GIT_REPO_URL environment variable, clone it to $GIT_FOLDER/. Otherwise use the home folder
+if [[ -n ${GIT_REPO_URL-} ]]; then
+	git_folder=${GIT_FOLDER:-~/git}
+	mkdir -p "${git_folder}"
+	git clone "${GIT_REPO_URL}" "${git_folder}/repo"
+	cd "${git_folder}/repo" || exit
+fi
+
 # Run a dbus session, which unlocks the gnome-keyring and runs the VS Code Server inside of it
 dbus-run-session -- sh -c "(echo ${VSCODE_KEYRING_PASS} | gnome-keyring-daemon --unlock) \
     && /usr/local/bin/initialise-vscode.sh \
@@ -81,3 +89,4 @@ dbus-run-session -- sh -c "(echo ${VSCODE_KEYRING_PASS} | gnome-keyring-daemon -
         --without-connection-token \
         --accept-server-license-terms \
         --host 0.0.0.0"
+
