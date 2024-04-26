@@ -53,7 +53,7 @@ if [[ -n ${GPG_SECRET_KEY-} ]]; then
 	default_key=$(gpg --list-secret-keys --keyid-format LONG)
 
 	# Get the key ID of the default key
-	default_key_id=$(echo "${default_key}" | grep -oP 'sec\s+\K[0-9A-F]+')
+	default_key_id=$(echo "${default_key}" | grep -E "^sec" | awk '{print $2}' | awk -F'/' '{print $2}')
 
 	# Check if the key is available in gh cli. If it's not added, add it.
 	if [[ -n ${GITHUB_TOKEN-} || -n ${GH_TOKEN-} ]]; then
