@@ -50,7 +50,7 @@ if [[ -n ${GPG_SECRET_KEY-} ]]; then
 	export GPG_TTY=$(tty)
 
 	# Set the default GPG key to the key imported
-	default_key=$(gpg --list-secret-keys --keyid-format LONG
+	default_key=$(gpg --list-secret-keys --keyid-format LONG)
 
 	# Get the key ID of the default key
 	default_key_id=$(echo "${default_key}" | grep -oP 'sec\s+\K[0-9A-F]+')
