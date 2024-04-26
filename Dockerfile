@@ -11,7 +11,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Install the necessary dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-utils sudo \
-  libasound2 libdrm2 libgbm1 libnspr4 libnss3 libxkbfile1 xdg-utils libvulkan1 \
+  libdrm2 libgbm1 libnspr4 libnss3 libxkbfile1 xdg-utils libvulkan1 \
   gnupg gnome-keyring wget curl python3-minimal ca-certificates \
   git ssh build-essential \
   unzip zip vim \
@@ -44,8 +44,7 @@ RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/s
   && sed -i 's/#ClientAliveCountMax 3/ClientAliveCountMax 3/' /etc/ssh/sshd_config
 
 # Install Docker using https://get.docker.com
-RUN groupadd -g ${DOCKER_GID} docker \
-  && wget -qO- https://get.docker.com | sh
+RUN wget -qO- https://get.docker.com | sh
 
 # Add the user to the sudoers file without password
 RUN useradd -m -s /bin/bash ${USERNAME} && \
