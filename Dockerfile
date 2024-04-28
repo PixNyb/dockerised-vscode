@@ -1,8 +1,8 @@
+# Although generally not recommended, ubuntu's latest tag refers to the latest LTS release.
 FROM ubuntu:latest
 LABEL maintainer="Roël Couwenberg <contact@roelc.me>"
 
 ARG USERNAME=vscode
-ARG DOCKER_GID=999
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -10,7 +10,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install the necessary dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  apt-utils sudo \
+  apt-utils software-properties-common sudo jq \
   libdrm2 libgbm1 libnspr4 libnss3 libxkbfile1 xdg-utils libvulkan1 \
   gnupg gnome-keyring wget curl python3-minimal ca-certificates \
   git ssh build-essential \

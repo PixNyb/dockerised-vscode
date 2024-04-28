@@ -2,6 +2,15 @@
 set -o pipefail -o nounset
 : "${VSCODE_KEYRING_PASS:?Variable not set or empty}"
 
+# Make sure all the variables are set
+REPO_URL=${REPO_URL-}
+REPO_FOLDER=${REPO_FOLDER-}
+GPG_SECRET_KEY=${GPG_SECRET_KEY-}
+GPG_PASSPHRASE=${GPG_PASSPHRASE-}
+GITHUB_TOKEN=${GITHUB_TOKEN-}
+GH_TOKEN=${GH_TOKEN-}
+INIT_SCRIPT_URL=${INIT_SCRIPT_URL-}
+
 # Make sure permissions for all mounted directories are correct
 USERNAME=$(whoami)
 sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
@@ -73,17 +82,33 @@ if [[ -n ${GPG_SECRET_KEY-} ]]; then
 	git config --global commit.gpgsign true
 fi
 
-# If the container has the GIT_REPO_URL environment variable, clone it to $GIT_FOLDER/. Otherwise use the home folder
-if [[ -n ${GIT_REPO_URL-} ]]; then
-	git_folder=${GIT_FOLDER:-~/git}
-	mkdir -p "${git_folder}"
-	git clone "${GIT_REPO_URL}" "${git_folder}/repo"
-	cd "${git_folder}/repo" || exit
+# If the container has the REPO_URL environment variable, clone it to $REPO_FOLDER/. Otherwise use the home folder
+if [[ -n ${REPO_URL-} ]]; then
+	repo_folder=${REPO_FOLDER:-~/}
+	repo_folder=${repo_folder%/}
+	project_name=$(basename "${REPO_URL}" .git)
+	mkdir -p "${repo_folder}"
+	git clone "${REPO_URL}" "${repo_folder}/${project_name}"
+	export PROJECT_FOLDER="${repo_folder}/${project_name}"
+	export PROJECT_NAME="${project_name}"
+
+	if [[ -n ${REPO_BRANCH-} ]]; then
+		if ! git ls-remote --exit-code --heads "${REPO_URL}" "${REPO_BRANCH}" &>/dev/null; then
+			REPO_BRANCH=$(git ls-remote --heads "${REPO_URL}" | grep -oP 'refs/heads/\K.*' | head -n1)
+		fi
+
+		curdir=$(pwd)
+		cd "${repo_folder}/${project_name}" || exit
+		git checkout "${REPO_BRANCH}"
+		export PROJECT_BRANCH="${REPO_BRANCH}"
+		cd "${curdir}" || exit
+	fi
 fi
 
 # Run a dbus session, which unlocks the gnome-keyring and runs the VS Code Server inside of it
 dbus-run-session -- sh -c "(echo ${VSCODE_KEYRING_PASS} | gnome-keyring-daemon --unlock) \
     && /usr/local/bin/initialise-vscode.sh \
+	&& if [ -n \"${INIT_SCRIPT_URL-}\" ]; then curl -sSL \"${INIT_SCRIPT_URL}\" | bash; fi \
     && code serve-web \
         --disable-telemetry \
         --without-connection-token \

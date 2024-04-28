@@ -15,7 +15,6 @@ docker build -t vscode .
 During the build process, you can pass the following arguments to customise the image:
 
 - `USERNAME`: The username to use when running the container. Defaults to `vscode`.
-- `DOCKER_GID`: The GID of the Docker group on the host machine. Defaults to `999` (the default GID of the Docker group on most systems).
 
 For example, to build the image with a custom username:
 
@@ -49,8 +48,10 @@ When running the container, you can pass the following environment variables to 
 - `GH_TOKEN`: The GitHub personal access token to use for authentication in the GitHub CLI and in turn git. (Optional)
 - `GPG_SECRET_KEY`: The GPG secret key to use for signing commits. (Optional, base64)
 - `GPG_PASSPHRASE`: The passphrase for the GPG secret key. (Optional)
-- `GIT_REPO_URL`: The URL of the Git repository to clone when the container starts. (Optional)
-- `GIT_FOLDER`: The folder to clone the Git repository into. (e.g. ~/projects) (Optional)
+- `REPO_URL`: The URL of the Git repository to clone when the container starts. (Optional)
+- `REPO_FOLDER`: The folder to clone the Git repository into. (e.g. ~/projects) (Optional)
+- `REPO_BRANCH`: The branch of the Git repository to clone. (Optional)
+- `INIT_SCRIPT_URL`: The URL of a shell script to run when the container starts. (Optional)
 
 > [!NOTE]
 > In order to insert a GPG secret key, you need to base64 encode the contents of the GPG secret key file and pass it as the `GPG_SECRET_KEY` environment variable.
@@ -59,9 +60,11 @@ When running the container, you can pass the following environment variables to 
 > ```bash
 > gpg --gen-key && gpg --export-secret-keys --armor $(gpg --list-secret-keys --keyid-format LONG | grep sec | awk '{print $2}' | cut -d'/' -f2) | base64 -w 0
 > ```
+>
+> If the GPG key doesn't exist in your GitHub account, and the GitHub CLI is authenticated with a personal access token, the GPG key will be uploaded to GitHub automatically.
 
 > [!NOTE]
-> The GPG secret key is expected to be the contents of a GPG secret key file. If it's not present in GitHub, and a GitHub personal access token is provided, the GPG key will be added to GitHub with the title `GPG key for ${hostname}`.
+> The `INIT_SCRIPT_URL` environment variable can be used to run a shell script when the container starts. This can be used to install additional tools and extensions specific to your needs. Keep in mind the `/usr/local/bin/initialise-vscode.sh` script is run after the `INIT_SCRIPT_URL` script. This allows you to start with a base setup and then customise it further according to your needs.
 
 ##### Git Configuration
 
@@ -116,9 +119,8 @@ For a more persistent setup, you can mount the following volumes to the containe
 
 - `/etc/localtime:/etc/localtime:ro`: The host's timezone configuration.
 - `/var/run/docker.sock:/var/run/docker.sock:ro`: The host's Docker socket.
-- `/path/to/workspace:/home/${USERNAME}/workspace`: The host's workspace directory.
-- `/path/to/ssh-keys:/home/${USERNAME}/.ssh`: The host's SSH keys directory.
-- `/path/to/config:/home/${USERNAME}/.vscode-server`: The host's Visual Studio Code configuration directory.
+
+Depending on your use case, you might want to think about mounting databases, configuration files, and other data that you want to persist between container restarts.
 
 ## Example
 
@@ -136,24 +138,20 @@ services:
       - GIT_GLOBAL_USER_NAME=PixNyb
       - GIT_GLOBAL_USER_EMAIL=contact@roelc.me
       - GH_TOKEN=<...>
+      - GPG_SECRET_KEY=<...>
+      - REPO_URL=<...>
+      - INIT_SCRIPT_URL=https://example.com/init.sh
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - config:/home/vscode/.vscode-server
-      - ssh-keys:/home/vscode/.ssh
-      - home:/etc/home
-      - workspaces:/home/vscode/projects
-
-volumes:
-  config:
-    driver: local
-  ssh-keys:
-    driver: local
-  home:
-    driver: local
-  workspaces:
-    driver: local
 ```
 
+In this example, we mount the host's timezone configuration and Docker socket to the container. We also mount a custom shell script to the container that will be run when the container starts. This shell script can be used to install additional tools and extensions specific to your needs.
 
+## Pre-made Specialised Containers
 
+In the [Dockerised VSCode Scripts](https://github.com/PixNyb/dockerised-vscode-scripts) repository, you can find pre-made specialised containers for various programming languages and toolkits. These containers include additional tools and extensions specific to the language or toolkit to help you get started quickly.
+
+## Disclaimer
+
+This Docker image is provided as is and is not officially supported by or affiliated with Visual Studio Code or GitHub in any way. Use at your own risk.
