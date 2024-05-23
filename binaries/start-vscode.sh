@@ -114,4 +114,3 @@ dbus-run-session -- sh -c "(echo ${VSCODE_KEYRING_PASS} | gnome-keyring-daemon -
         --without-connection-token \
         --accept-server-license-terms \
         --host 0.0.0.0"
-

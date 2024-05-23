@@ -95,9 +95,7 @@ You can access the container through the web server by navigating to `http://loc
 
 You can access the container through a VS Code SSH connection by using the following command:
 
-```bash
-ssh -p 2222 vscode@localhost
-```
+<kbd>Cmd / Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> -> `Remote-SSH: Connect to Host...` -> `Add New SSH Host...` -> `ssh -p 2222 vscode@localhost`
 
 This will open Visual Studio Code in your local VS Code instance.
 
