@@ -68,12 +68,12 @@ RUN sudo apt-get install wget gpg -y && \
 COPY binaries/* /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
 
-# Create Visual Studio Code directories
-RUN mkdir -p /home/${USERNAME}/.vscode-server /home/${USERNAME}/.vscode
-
-# Change the ownership of the Visual Studio Code directories in order to run without elevated privileges
-RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode \
-  && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode-server
+# Create Visual Studio Code directories and link them
+RUN mkdir -p /home/${USERNAME}/.vscode-server \
+  && ln -s /home/${USERNAME}/.vscode-server /home/${USERNAME}/.vscode \
+  && mkdir -p /home/${USERNAME}/.vscode-server-insiders \
+  && ln -s /home/${USERNAME}/.vscode-server-insiders /home/${USERNAME}/.vscode-insiders \
+  && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode-server /home/${USERNAME}/.vscode-server-insiders
 
 # Setup a /etc/home directory for the user
 RUN sudo mkdir -p /etc/home \
