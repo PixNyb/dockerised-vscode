@@ -107,21 +107,6 @@ if [[ -n ${REPO_URL-} ]]; then
 	fi
 fi
 
-# Install extensions from the EXTENSION_LIST_URL environment variable. It can contain a list of urls separated by commas.
-if [[ -n ${EXTENSION_LIST_URL-} ]]; then
-	IFS=',' read -r -a urls <<<"${EXTENSION_LIST_URL}"
-	for url in "${urls[@]}"; do
-		curl -sSL "${url}" | while read -r extension; do
-			# Append the extension to the list of extensions
-			if [[ -n ${EXTENSION_LIST-} ]]; then
-				EXTENSION_LIST="${EXTENSION_LIST},${extension}"
-			else
-				EXTENSION_LIST="${extension}"
-			fi
-		done
-	done
-fi
-
 # Run a dbus session, which unlocks the gnome-keyring and runs the VS Code Server inside of it
 dbus-run-session -- sh -c "(echo ${VSCODE_KEYRING_PASS} | gnome-keyring-daemon --unlock) \
     && /usr/local/bin/initialise-vscode.sh \
