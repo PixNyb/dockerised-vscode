@@ -10,6 +10,8 @@ GPG_PASSPHRASE=${GPG_PASSPHRASE-}
 GITHUB_TOKEN=${GITHUB_TOKEN-}
 GH_TOKEN=${GH_TOKEN-}
 INIT_SCRIPT_URL=${INIT_SCRIPT_URL-}
+EXTENSION_LIST=${EXTENSION_LIST-}
+EXTENSION_LIST_URL=${EXTENSION_LIST_URL-}
 
 # Make sure permissions for all mounted directories are correct
 USERNAME=$(whoami)
@@ -105,10 +107,26 @@ if [[ -n ${REPO_URL-} ]]; then
 	fi
 fi
 
+# Install extensions from the EXTENSION_LIST_URL environment variable. It can contain a list of urls separated by commas.
+if [[ -n ${EXTENSION_LIST_URL-} ]]; then
+	IFS=',' read -r -a urls <<<"${EXTENSION_LIST_URL}"
+	for url in "${urls[@]}"; do
+		curl -sSL "${url}" | while read -r extension; do
+			# Append the extension to the list of extensions
+			if [[ -n ${EXTENSION_LIST-} ]]; then
+				EXTENSION_LIST="${EXTENSION_LIST},${extension}"
+			else
+				EXTENSION_LIST="${extension}"
+			fi
+		done
+	done
+fi
+
 # Run a dbus session, which unlocks the gnome-keyring and runs the VS Code Server inside of it
 dbus-run-session -- sh -c "(echo ${VSCODE_KEYRING_PASS} | gnome-keyring-daemon --unlock) \
     && /usr/local/bin/initialise-vscode.sh \
 	&& if [ -n \"${INIT_SCRIPT_URL-}\" ]; then curl -sSL \"${INIT_SCRIPT_URL}\" | bash; fi \
+	&& EXTENSION_LIST=\"${EXTENSION_LIST-}\" /usr/local/bin/install-extensions.sh \
     && code serve-web \
         --disable-telemetry \
         --without-connection-token \

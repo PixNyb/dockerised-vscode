@@ -3,6 +3,7 @@ FROM ubuntu:latest
 LABEL maintainer="Roël Couwenberg <contact@roelc.me>"
 
 ARG USERNAME=vscode
+ARG CODE_INSIDERS=
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -53,15 +54,22 @@ RUN useradd -m -s /bin/bash ${USERNAME} && \
   usermod -aG docker ${USERNAME}
 
 # Install Visual Studio Code
-RUN mkdir -p /home/${USERNAME}/.vscode-server /home/${USERNAME}/.vscode \
-  && wget -qO /tmp/vscode.deb https://update.code.visualstudio.com/latest/linux-deb-x64/stable \
-  && apt-get install -y --no-install-recommends /tmp/vscode.deb \
-  && rm /tmp/vscode.deb \
-  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+RUN sudo apt-get install wget gpg -y && \
+  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && \
+  sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && \
+  echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" |sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null && \
+  rm -f packages.microsoft.gpg && \
+  sudo apt install apt-transport-https -y && \
+  sudo apt update && \
+  sudo apt install code${CODE_INSIDERS:+-insiders} -y && \
+  sudo apt autoremove -y && sudo apt clean -y && sudo rm -rf /var/lib/apt/lists/*
 
 # Include binaries
 COPY binaries/* /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
+
+# Create Visual Studio Code directories
+RUN mkdir -p /home/${USERNAME}/.vscode-server /home/${USERNAME}/.vscode
 
 # Change the ownership of the Visual Studio Code directories in order to run without elevated privileges
 RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode \

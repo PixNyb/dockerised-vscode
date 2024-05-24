@@ -22,11 +22,22 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build and push code
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
           tags: |
             pixnyb/code:latest
+            pixnyb/code:${{ github.sha }}
+
+      - name: Build and push code-insiders
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          build-args: |
+            CODE_INSIDERS=true
+          tags: |
+            pixnyb/code:insiders
             pixnyb/code:${{ github.sha }}

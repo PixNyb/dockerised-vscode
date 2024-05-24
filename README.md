@@ -15,6 +15,7 @@ docker build -t vscode .
 During the build process, you can pass the following arguments to customise the image:
 
 - `USERNAME`: The username to use when running the container. Defaults to `vscode`.
+- `CODE_INSIDERS`: Whether to install Visual Studio Code Insiders instead of Visual Studio Code. If this argument is set, Visual Studio Code Insiders will be installed instead of Visual Studio Code. Defaults to ``.
 
 For example, to build the image with a custom username:
 
@@ -52,6 +53,8 @@ When running the container, you can pass the following environment variables to 
 - `REPO_FOLDER`: The folder to clone the Git repository into. (e.g. ~/projects) (Optional)
 - `REPO_BRANCH`: The branch of the Git repository to clone. (Optional)
 - `INIT_SCRIPT_URL`: The URL of a shell script to run when the container starts. (Optional)
+- `EXTENSION_LIST`: A list of Visual Studio Code extensions to install separated by commas. (Optional, e.g `ms-python.python,ms-vscode.cpptools`)
+- `EXTENSION_LIST_URL`: The URL of a file containing a list of Visual Studio Code extensions to install separated by newlines. (Optional, e.g. `https://example.com/extensions.txt`)
 
 > [!NOTE]
 > In order to insert a GPG secret key, you need to base64 encode the contents of the GPG secret key file and pass it as the `GPG_SECRET_KEY` environment variable.
@@ -65,6 +68,9 @@ When running the container, you can pass the following environment variables to 
 
 > [!NOTE]
 > The `INIT_SCRIPT_URL` environment variable can be used to run a shell script when the container starts. This can be used to install additional tools and extensions specific to your needs. Keep in mind the `/usr/local/bin/initialise-vscode.sh` script is run after the `INIT_SCRIPT_URL` script. This allows you to start with a base setup and then customise it further according to your needs.
+
+> [!NOTE]
+> The `EXTENSION_LIST_URL` environment variable can be used to install a list of Visual Studio Code extensions from a file. It can also be, itself, a list of URLs separated by commas. The file should contain a list of Visual Studio Code extensions separated by newlines.
 
 ##### Git Configuration
 
