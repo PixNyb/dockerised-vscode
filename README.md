@@ -41,6 +41,15 @@ This command will start the container and expose ports `8000` and `2222` for the
 
 The image is availlable on [Docker Hub](https://hub.docker.com/r/pixnyb/code).
 
+The following tags are available:
+
+| Tag              | Description                                                      |
+| ---------------- | ---------------------------------------------------------------- |
+| `latest`         | The latest stable version of Visual Studio Code.                 |
+| `insiders`       | The latest insider version of Visual Studio Code.                |
+| `<sha>`          | A specific commit of the Dockerised Visual Studio Code.          |
+| `<sha>`-insiders | A specific commit of the Dockerised Visual Studio Code Insiders. |
+
 #### Environment Variables
 
 When running the container, you can pass the following environment variables to customise the container:

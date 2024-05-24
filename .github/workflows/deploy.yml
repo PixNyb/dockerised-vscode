@@ -40,4 +40,4 @@ jobs:
             CODE_INSIDERS=true
           tags: |
             pixnyb/code:insiders
-            pixnyb/code:${{ github.sha }}
+            pixnyb/code:${{ github.sha }}-insiders

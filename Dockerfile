@@ -3,7 +3,7 @@ FROM ubuntu:latest
 LABEL maintainer="Roël Couwenberg <contact@roelc.me>"
 
 ARG USERNAME=vscode
-ARG CODE_INSIDERS=
+ARG CODE_INSIDERS
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -64,16 +64,17 @@ RUN sudo apt-get install wget gpg -y && \
   sudo apt install code${CODE_INSIDERS:+-insiders} -y && \
   sudo apt autoremove -y && sudo apt clean -y && sudo rm -rf /var/lib/apt/lists/*
 
+# If CODE_INSIDERS is set, link the code-insiders binary to code
+RUN if [ -n "${CODE_INSIDERS}" ]; then ln -s /usr/bin/code-insiders /usr/bin/code; echo "Installed Visual Studio Code Insiders"; fi
+
 # Include binaries
 COPY binaries/* /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
 
 # Create Visual Studio Code directories and link them
-RUN mkdir -p /home/${USERNAME}/.vscode-server \
-  && ln -s /home/${USERNAME}/.vscode-server /home/${USERNAME}/.vscode \
-  && mkdir -p /home/${USERNAME}/.vscode-server-insiders \
-  && ln -s /home/${USERNAME}/.vscode-server-insiders /home/${USERNAME}/.vscode-insiders \
-  && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode-server /home/${USERNAME}/.vscode-server-insiders
+RUN mkdir -p /home/${USERNAME}/.vscode-server${CODE_INSIDERS:+-insiders} \
+  && ln -s /home/${USERNAME}/.vscode-server${CODE_INSIDERS:+-insiders} /home/${USERNAME}/.vscode${CODE_INSIDERS:+-insiders} \
+  && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode-server${CODE_INSIDERS:+-insiders}
 
 # Setup a /etc/home directory for the user
 RUN sudo mkdir -p /etc/home \
