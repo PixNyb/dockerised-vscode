@@ -96,18 +96,19 @@ if [[ -n ${REPO_URL-} ]]; then
 
 	# If the REPO_BRANCH environment variable is set, checkout that branch
 	if [[ -n ${REPO_BRANCH-} ]]; then
-		if ! git ls-remote --exit-code --heads "${REPO_URL}" "${REPO_BRANCH}" &>/dev/null; then
-			REPO_BRANCH=$(git ls-remote --heads "${REPO_URL}" | grep -oP 'refs/heads/\K.*' | head -n1)
-		fi
-
 		curdir=$(pwd)
 		cd "${repo_folder}/${project_name}" || exit
-		# If the branch exists, checkout the branch. Else create a new branch with the name of REPO_BRANCH
+
 		if git show-ref --verify --quiet "refs/heads/${REPO_BRANCH}"; then
+			if ! git ls-remote --exit-code --heads "${REPO_URL}" "${REPO_BRANCH}" &>/dev/null; then
+				REPO_BRANCH=$(git ls-remote --heads "${REPO_URL}" | grep -oP 'refs/heads/\K.*' | head -n1)
+			fi
+
 			git checkout "${REPO_BRANCH}"
 		else
 			git checkout -b "${REPO_BRANCH}"
 		fi
+
 		export PROJECT_BRANCH="${REPO_BRANCH}"
 		cd "${curdir}" || exit
 	fi
