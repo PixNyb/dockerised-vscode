@@ -106,6 +106,6 @@ WORKDIR /home/${USERNAME}
 
 ENTRYPOINT [ "/usr/local/bin/start-vscode.sh" ]
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=15 CMD [ "/usr/local/bin/healthcheck-vscode.sh" ]
+HEALTHCHECK --interval=15s --timeout=5s --start-period=15m --retries=30 CMD [ "/usr/local/bin/healthcheck-vscode.sh" ]
 
 EXPOSE 8000 22
