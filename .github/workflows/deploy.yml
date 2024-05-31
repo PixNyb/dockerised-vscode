@@ -4,40 +4,85 @@ on:
   push:
     branches:
       - main
+      - development
 
 jobs:
-  build-and-push:
+  code:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Convert repository owner to lowercase
+        run: echo "LOWERCASE=$(echo ${{ github.repository_owner }} | awk '{print tolower($0)}')" >> $GITHUB_ENV
+
+      - name: Check if currently in a pull request
+        id: pr
+        run: echo "IS_PR=$(test -n "${{ github.event.pull_request }}")" >> $GITHUB_ENV
+
+      - name: Create the tag name
+        id: tag
+        run: echo "TAG_NAME=$(if [[ "${{ github.ref_name }}" == "main" ]]; then echo "latest"; else echo ${{ env.IS_PR }} | grep -q 'x' && echo "pr-${{ github.event.pull_request.number }}" || echo ${{ github.ref_name }}; fi)" >> $GITHUB_ENV
+
       - name: Build and push code
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ${{ matrix.service }}
           push: true
           tags: |
-            pixnyb/code:latest
-            pixnyb/code:${{ github.sha }}
+            ${{ env.LOWERCASE }}/code:${{ env.TAG_NAME }}
+            ${{ env.LOWERCASE }}/code:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Build and push code-insiders
-        uses: docker/build-push-action@v2
+  code-insiders:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          context: .
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Convert repository owner to lowercase
+        run: echo "LOWERCASE=$(echo ${{ github.repository_owner }} | awk '{print tolower($0)}')" >> $GITHUB_ENV
+
+      - name: Check if currently in a pull request
+        id: pr
+        run: echo "IS_PR=$(test -n "${{ github.event.pull_request }}")" >> $GITHUB_ENV
+
+      - name: Create the tag name
+        id: tag
+        run: echo "TAG_NAME=$(if [[ "${{ github.ref_name }}" == "main" ]]; then echo "latest"; else echo ${{ env.IS_PR }} | grep -q 'x' && echo "pr-${{ github.event.pull_request.number }}" || echo ${{ github.ref_name }}; fi)" >> $GITHUB_ENV
+
+      - name: Build and push code
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.service }}
           push: true
           build-args: |
             CODE_INSIDERS=true
           tags: |
-            pixnyb/code:insiders
-            pixnyb/code:${{ github.sha }}-insiders
+            ${{ env.LOWERCASE }}/code-insiders:${{ env.TAG_NAME }}
+            ${{ env.LOWERCASE }}/code-insiders:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+# TODO: Add specialised code containers in a matrix
