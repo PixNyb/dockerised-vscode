@@ -17,6 +17,9 @@ jobs:
       profile_manifest: ${{ steps.manifest.outputs.PROFILE_MANIFEST }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Convert repository owner to lowercase
         id: lowercase
         run: echo "LOWERCASE=$(echo ${{ github.repository_owner }} | awk '{print tolower($0)}')" >> $GITHUB_OUTPUT
