@@ -10,8 +10,8 @@ RUN a2enmod rewrite
 
 RUN chmod 777 /var/www/html
 
-ENV EXTENSION_LIST="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag"
-
 USER vscode
+
+ENV EXTENSION_LIST="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag"
 
 EXPOSE 80

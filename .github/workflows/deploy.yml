@@ -20,6 +20,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Make dockerfiles
+        run: make
+
       - name: Convert repository owner to lowercase
         id: lowercase
         run: echo "LOWERCASE=$(echo ${{ github.repository_owner }} | awk '{print tolower($0)}')" >> $GITHUB_OUTPUT
@@ -71,7 +74,6 @@ jobs:
           push: true
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
-            ${{ needs.setup.outputs.lowercase }}/code:${{ github.sha }}
           cache-from: type=gha,scope=code
           cache-to: type=gha,mode=max,scope=code
 
@@ -102,7 +104,6 @@ jobs:
             CODE_INSIDERS=true
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:insiders-${{ needs.setup.outputs.tag_name }}
-            ${{ needs.setup.outputs.lowercase }}/code:insiders-${{ github.sha }}
           cache-from: type=gha,scope=code-insiders
           cache-to: type=gha,mode=max,scope=code-insiders
 
@@ -118,6 +119,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Make dockerfiles
+        run: make
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
