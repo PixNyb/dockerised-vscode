@@ -1,0 +1,34 @@
+FROM pixnyb/%image% as base
+
+USER root
+
+RUN add-apt-repository ppa:ondrej/php -y && \
+    apt-get update && apt-get install -y \
+    apache2 \
+    libapache2-mod-php7.2 \
+    php7.2-cli \
+    php7.2-bcmath \
+    php7.2-curl \
+    php7.2-mbstring \
+    php7.2-mysql \
+    php7.2-tokenizer \
+    php7.2-xml \
+    php7.2-zip \
+    php7.2-gd \
+    php7.2-intl \
+    && sudo rm -rf /var/lib/apt/lists/*
+
+RUN curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer
+
+RUN echo 'export PATH="$PATH:$HOME/.composer/vendor/bin"' >> /root/.bashrc
+
+RUN a2enmod rewrite
+
+RUN chmod 777 /var/www/html
+
+ENV EXTENSION_LIST="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag"
+
+USER vscode
+
+EXPOSE 80
