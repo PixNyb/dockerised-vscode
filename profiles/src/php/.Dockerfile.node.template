@@ -51,6 +51,6 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | b
     && nvm use %node-version% \
     && npm install -g yarn
 
-ENV EXTENSION_LIST="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag"
+RUN EXTENSION_LIST="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag" /usr/local/bin/install-extensions.sh
 
 EXPOSE 80

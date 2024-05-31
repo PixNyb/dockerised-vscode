@@ -12,6 +12,6 @@ RUN chmod 777 /var/www/html
 
 USER vscode
 
-ENV EXTENSION_LIST="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag"
+RUN EXTENSION_LIST="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag" /usr/local/bin/install-extensions.sh
 
 EXPOSE 80
