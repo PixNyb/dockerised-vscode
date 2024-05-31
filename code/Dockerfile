@@ -93,7 +93,6 @@ COPY .gitignore /home/${USERNAME}/.gitignore
 COPY .gitmessage /home/${USERNAME}/.gitmessage
 
 # Setup Git configuration
-COPY git/* /home/${USERNAME}/
 RUN git config --global commit.template ~/.gitmessage \
   && git config --global init.defaultBranch main \
   && git config --global pull.rebase true \
