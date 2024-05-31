@@ -44,7 +44,8 @@ jobs:
       - name: Read profile manifest
         id: manifest
         run: |
-          echo "PROFILE_MANIFEST=$(cat profiles/dist/manifest.json)" >> $GITHUB_OUTPUT
+          escaped_manifest=$(jq -c . profiles/dist/manifest.json)
+          echo "PROFILE_MANIFEST=$escaped_manifest" >> $GITHUB_OUTPUT
 
   code:
     runs-on: ubuntu-latest
