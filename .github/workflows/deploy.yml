@@ -70,8 +70,7 @@ jobs:
       - name: Build and push code
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: code/Dockerfile
+          context: code
           push: true
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
@@ -99,8 +98,7 @@ jobs:
       - name: Build and push code
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: code/Dockerfile
+          context: code
           push: true
           build-args: |
             CODE_INSIDERS=true
