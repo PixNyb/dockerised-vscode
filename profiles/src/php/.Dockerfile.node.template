@@ -36,20 +36,20 @@ RUN curl -sS https://getcomposer.org/installer | php \
 
 RUN echo 'export PATH="$PATH:/home/vscode/.composer/vendor/bin"' >> /home/vscode/.bashrc
 
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash \
-    && echo 'export NVM_DIR="$HOME/.nvm"' >> /home/vscode/.bashrc \
-    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /home/vscode/.bashrc \
-    && echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> /home/vscode/.bashrc \
-    && . /home/vscode/.bashrc \
-    && nvm install %node-version% \
-    && npm use %node-version% \
-    && npm install -g yarn
-
 RUN a2enmod rewrite
 
 RUN chmod 777 /var/www/html
 
 USER vscode
+
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash \
+    && echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc \
+    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc \
+    && echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> ~/.bashrc \
+    && . ~/.nvm/nvm.sh \
+    && nvm install %node-version% \
+    && nvm use %node-version% \
+    && npm install -g yarn
 
 ENV EXTENSION_LIST="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag"
 
