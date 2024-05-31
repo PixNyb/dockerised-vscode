@@ -68,7 +68,7 @@ RUN sudo apt-get install wget gpg -y && \
 RUN if [ -n "${CODE_INSIDERS}" ]; then ln -s /usr/bin/code-insiders /usr/bin/code; echo "Installed Visual Studio Code Insiders"; fi
 
 # Include binaries
-COPY binaries/* /usr/local/bin/
+COPY bin/* /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
 
 # Create Visual Studio Code directories and link them
@@ -89,8 +89,8 @@ USER ${USERNAME}
 # Add the /home/${USERNAME}/.local/bin directory to the PATH
 ENV PATH="/home/${USERNAME}/.local/bin:${PATH}"
 
-COPY git/.gitignore /home/${USERNAME}/.gitignore
-COPY git/.gitmessage /home/${USERNAME}/.gitmessage
+COPY .gitignore /home/${USERNAME}/.gitignore
+COPY .gitmessage /home/${USERNAME}/.gitmessage
 
 # Setup Git configuration
 COPY git/* /home/${USERNAME}/

@@ -4,14 +4,12 @@
 .idea/
 .sublime-*/
 
-# Docker
-.docker/
-.docker-autostart
-docker-compose.yml
-*.sql
-
-# Node.js dependencies
+# Vendor folders
 node_modules/
+jspm_packages/
+bower_components/
+vendor/
+packages/
 
 # Compiled code
 dist/
@@ -47,6 +45,8 @@ obj/
 # Environment variables
 .env
 
-# SQLite database
+# Databases
 *.sqlite
 *.sqlite3
+*.db
+*.sql
