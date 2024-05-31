@@ -70,7 +70,8 @@ jobs:
       - name: Build and push code
         uses: docker/build-push-action@v5
         with:
-          context: code
+          context: .
+          file: code/Dockerfile
           push: true
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
@@ -98,7 +99,8 @@ jobs:
       - name: Build and push code
         uses: docker/build-push-action@v5
         with:
-          context: code
+          context: .
+          file: code/Dockerfile
           push: true
           build-args: |
             CODE_INSIDERS=true
@@ -123,6 +125,9 @@ jobs:
       - name: Make dockerfiles
         run: make
 
+      - name: List files
+        run: ls profiles/dist/${{ matrix.release }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -135,8 +140,8 @@ jobs:
       - name: Build and push code
         uses: docker/build-push-action@v5
         with:
-          context: profiles/dist/${{ matrix.release }}
-          file: ./Dockerfile.${{ matrix.profile }}
+          context: .
+          file: profiles/dist/${{ matrix.release }}/Dockerfile.${{ matrix.profile }}
           push: true
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:${{ matrix.profile }}
