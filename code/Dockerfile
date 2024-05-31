@@ -85,6 +85,7 @@ RUN sudo -u ${USERNAME} mkdir -p /home/${USERNAME}/.local/bin \
   && sudo -u ${USERNAME} chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.local/bin
 
 USER ${USERNAME}
+ENV USER=${USERNAME}
 
 # Add the /home/${USERNAME}/.local/bin directory to the PATH
 ENV PATH="/home/${USERNAME}/.local/bin:${PATH}"

@@ -1,7 +1,13 @@
 FROM pixnyb/%image% as base
 
+USER root
+
 RUN apt-get update && apt-get install -y \
     apache2 \
-    && rm -rf /var/lib/apt/lists/*
+    && sudo rm -rf /var/lib/apt/lists/*
 
 RUN a2enmod rewrite
+
+USER vscode
+
+EXPOSE 80
