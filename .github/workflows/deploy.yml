@@ -80,9 +80,8 @@ jobs:
           build-args: |
             CODE_INSIDERS=true
           tags: |
-            ${{ env.LOWERCASE }}/code-insiders:${{ env.TAG_NAME }}
-            ${{ env.LOWERCASE }}/code-insiders:${{ github.sha }}
+            ${{ env.LOWERCASE }}/code:insiders-${{ env.TAG_NAME }}
+            ${{ env.LOWERCASE }}/code:insiders-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
 # TODO: Add specialised code containers in a matrix
