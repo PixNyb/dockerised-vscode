@@ -123,6 +123,9 @@ jobs:
       - name: Make dockerfiles
         run: make
 
+      - name: List files
+        run: ls profiles/dist/${{ matrix.release }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
