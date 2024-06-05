@@ -13,14 +13,15 @@ DB_DATABASE=${DB_DATABASE:-$PROJECT_NAME}
 # If the DB_HOST is set and the DB_USER is root, attempt to connect to the database and create the database if it doesn't exist
 if [[ -n $DB_HOST && $DB_USER == "root" ]]; then
 	RES=0
-	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $PROJECT_NAME;" 2>/dev/null
+	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" 2>/dev/null
 	RES=$?
 
-	# If the user is root, create a new user with a random password and grant all privileges on the database
+	# If the user is root, drop the existing user, create a new user with a random password and grant all privileges on the database
 	DB_USER_PASSWORD=$(openssl rand -base64 12)
-	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "CREATE USER IF NOT EXISTS '$PROJECT_NAME'@'%' IDENTIFIED BY '$DB_USER_PASSWORD';" 2>/dev/null
+	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "DROP USER IF EXISTS '$PROJECT_NAME'@'%';" 2>/dev/null
+	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "CREATE USER '$PROJECT_NAME'@'%' IDENTIFIED BY '$DB_USER_PASSWORD';" 2>/dev/null
 	RES=$((RES + $?))
-	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "GRANT ALL PRIVILEGES ON $PROJECT_NAME.* TO '$PROJECT_NAME'@'%';" 2>/dev/null
+	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$PROJECT_NAME'@'%';" 2>/dev/null
 	RES=$((RES + $?))
 	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "FLUSH PRIVILEGES;" 2>/dev/null
 	RES=$((RES + $?))
@@ -33,9 +34,9 @@ if [[ -n $DB_HOST && $DB_USER == "root" ]]; then
 		echo "Initialised database using root user:"
 		echo "Host: $DB_HOST"
 		echo "Port: $DB_PORT"
-		echo "User: $DB_USER"
+		echo "User: $PROJECT_NAME"
 		echo "Password: $DB_USER_PASSWORD"
-		echo "Database: $PROJECT_NAME"
+		echo "Database: $DB_DATABASE"
 
 		# Set the DB_USER and DB_PASSWORD to the new user and password
 		DB_USER=$PROJECT_NAME
@@ -62,10 +63,16 @@ if [[ -f composer.lock ]]; then
 	composer install -n &
 fi
 
-# If the project contains a .env.* file that doesn't include the word 'test', copy it to .env
-for file in .env.*; do
-	if [[ -f $file ]] && ! grep -q 'test' "$file"; then
-		cp "$file" .env
-		break
-	fi
-done
+# If the project does not yet contain a .env file, create one using /etc/templates/env. In order to do this, the project must contain a composer.json file to determine the project type
+# Determine if the project uses a common framework, currently only Laravel and Silverstripe have supported .env files.
+if [[ -f composer.json && ! -f .env ]]; then
+	frameworks=($(ls "/etc/templates" | sed 's/\.env$//'))
+	for framework in "${frameworks[@]}"; do
+		if grep -q "\"$framework" composer.json; then
+			echo "Creating .env file for $framework"
+			template=$(<"/etc/templates/$framework.env")
+			eval "echo \"$template\"" >.env
+			break
+		fi
+	done
+fi

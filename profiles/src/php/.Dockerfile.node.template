@@ -45,6 +45,8 @@ RUN a2enmod rewrite
 COPY bin/php/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
 
+COPY templates/php/* /etc/templates
+
 ENV PHP_VERSION=%php-version%
 ENV WITH_NODE=true
 

@@ -8,8 +8,12 @@ define SCRIPT_FOLDERS =
 $(shell find profiles/src -type d -name scripts)
 endef
 
+define TEMPLATE_FOLDERS =
+$(shell find profiles/src -type d -name templates)
+endef
+
 .PHONY: all
-all: run-makefiles generate-dockerfiles export-scripts generate-json
+all: run-makefiles generate-dockerfiles export-scripts export-templates generate-json
 
 .PHONY: run-makefiles
 run-makefiles:
@@ -42,6 +46,17 @@ export-scripts:
 		mkdir -p profiles/dist/code-insiders/bin/$$PROFILE_NAME ; \
 		cp -r $$dir/* profiles/dist/code/bin/$$PROFILE_NAME ; \
 		cp -r $$dir/* profiles/dist/code-insiders/bin/$$PROFILE_NAME ; \
+	done
+
+.PHONY: export-templates
+export-templates:
+	@for dir in $(call TEMPLATE_FOLDERS); do \
+		PROFILE_PATH=`dirname $$dir` ; \
+		PROFILE_NAME=`basename $$PROFILE_PATH` ; \
+		mkdir -p profiles/dist/code/templates/$$PROFILE_NAME ; \
+		mkdir -p profiles/dist/code-insiders/templates/$$PROFILE_NAME ; \
+		cp -r $$dir/* profiles/dist/code/templates/$$PROFILE_NAME ; \
+		cp -r $$dir/* profiles/dist/code-insiders/templates/$$PROFILE_NAME ; \
 	done
 
 .PHONY: generate-json
