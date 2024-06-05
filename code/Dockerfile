@@ -72,9 +72,8 @@ COPY bin/* /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
 
 # Create Visual Studio Code directories and link them
-RUN mkdir -p /home/${USERNAME}/.vscode-server${CODE_INSIDERS:+-insiders} \
-  && ln -s /home/${USERNAME}/.vscode-server${CODE_INSIDERS:+-insiders} /home/${USERNAME}/.vscode${CODE_INSIDERS:+-insiders} \
-  && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode-server${CODE_INSIDERS:+-insiders}
+RUN mkdir -p /home/${USERNAME}/.vscode${CODE_INSIDERS:+-insiders} /home/${USERNAME}/.vscode-server${CODE_INSIDERS:+-insiders} \
+  && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode${CODE_INSIDERS:+-insiders} /home/${USERNAME}/.vscode-server${CODE_INSIDERS:+-insiders}
 
 # Setup a /etc/home directory for the user
 RUN sudo mkdir -p /etc/home \

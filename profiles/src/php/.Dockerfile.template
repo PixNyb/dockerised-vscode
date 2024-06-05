@@ -18,6 +18,7 @@ RUN add-apt-repository ppa:ondrej/php -y && \
     php%php-version%-intl \
     libapache2-mod-php%php-version% \
     apache2 \
+    mysql-client \
     && sudo rm -rf /var/lib/apt/lists/*
 
 RUN update-alternatives --set php /usr/bin/php%php-version%
@@ -49,6 +50,13 @@ ENV WITH_NODE=false
 
 USER vscode
 
-RUN EXTENSION_LIST="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag" /usr/local/bin/install-extensions.sh
+ENV INITIAL_EXTENSIONS="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag"
+
+# Check if EXTENSION_LIST is already set and append the new extensions if it is
+RUN if [ -n "${EXTENSION_LIST}" ]; then \
+    EXTENSION_LIST="${EXTENSION_LIST},${INITIAL_EXTENSIONS}"; \
+    else \
+    EXTENSION_LIST="${INITIAL_EXTENSIONS}"; \
+    fi
 
 EXPOSE 80

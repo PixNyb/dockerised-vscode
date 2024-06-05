@@ -114,13 +114,32 @@ if [[ -n ${REPO_URL-} ]]; then
 	fi
 fi
 
+echo $EXTENSION_LIST
+
 # Run a dbus session, which unlocks the gnome-keyring and runs the VS Code Server inside of it
-dbus-run-session -- sh -c "(echo ${VSCODE_KEYRING_PASS} | gnome-keyring-daemon --unlock) \
+dbus-run-session -- sh -c "
+    echo ${VSCODE_KEYRING_PASS} | gnome-keyring-daemon --unlock \
     && /usr/local/bin/initialise-vscode.sh \
-	&& if [ -n \"${INIT_SCRIPT_URL-}\" ]; then curl -sSL \"${INIT_SCRIPT_URL}\" | bash; fi \
-	&& EXTENSION_LIST=\"${EXTENSION_LIST-}\" /usr/local/bin/install-extensions.sh \
+    && if [ -n \"${INIT_SCRIPT_URL-}\" ]; then curl -sSL \"${INIT_SCRIPT_URL}\" | bash; fi \
     && code serve-web \
         --disable-telemetry \
         --without-connection-token \
         --accept-server-license-terms \
-        --host 0.0.0.0"
+        --host 0.0.0.0 &
+    VS_CODE_PID=\$!
+
+    # Wait for any file matching /tmp/code-*
+    while [ -z \"\$(ls /tmp/code-* 2>/dev/null)\" ]; do
+		curl http://localhost:8000 > /dev/null 2>&1
+        sleep 1
+    done
+
+	wait 4
+
+    # Install extensions
+    /usr/local/bin/install-extensions.sh
+
+    # Wait for VS Code server to end
+    wait \$VS_CODE_PID
+    fg
+"

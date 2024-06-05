@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Check if dump file location is provided
+if [[ $# -ne 1 ]]; then
+	echo "Usage: $0 <dump_file>"
+	exit 1
+fi
+
+# Export database to SQL file
+mysqldump -h $DB_HOST -u $DB_USER -p$DB_PASSWORD $DB_DATABASE >$1
