@@ -1,7 +1,6 @@
 DOCKERFILE := .Dockerfile.template
 NODE_DOCKERFILE := .Dockerfile.node.template
 PHP_VERSIONS := 7.2 7.3 7.4 8.0 8.1 8.2 8.3
-NODE_VERSIONS := 14 18 22
 
 .PHONY: all
 all:
@@ -19,10 +18,8 @@ all:
 		esac ; \
 		OUTPUT_FILE="Dockerfile.$$version" ; \
 		sed "s/%php-version%/$$version/g" $(DOCKERFILE) | sed "s/%xdebug%/$$XDEBUG/g" > $$OUTPUT_FILE ; \
-		for node_version in $(NODE_VERSIONS); do \
-			OUTPUT_FILE="Dockerfile.$$version-node-$$node_version" ; \
-			sed "s/%php-version%/$$version/g" $(NODE_DOCKERFILE) | sed "s/%node-version%/$$node_version/g" | sed "s/%xdebug%/$$XDEBUG/g" > $$OUTPUT_FILE ; \
-		done ; \
+		OUTPUT_FILE="Dockerfile.$$version-node" ; \
+		sed "s/%php-version%/$$version/g" $(NODE_DOCKERFILE) | sed "s/%xdebug%/$$XDEBUG/g" > $$OUTPUT_FILE ; \
 	done
 
 .PHONY: clean

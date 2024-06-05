@@ -72,7 +72,34 @@ if [[ -f composer.json && ! -f .env ]]; then
 			echo "Creating .env file for $framework"
 			template=$(<"/etc/templates/$framework.env")
 			eval "echo \"$template\"" >.env
+
+			# If there's an existing .env.* file, compare the two and add any missing variables to the .env file.
+			# Do this by grabbing the keys from the existing .env.* file and adding any key not present in the .env file to the .env file.
+			files=$(ls .env.* 2>/dev/null)
+			if [[ -n $files ]]; then
+				for file in $files; do
+					while IFS='=' read -r key _; do
+						# Skip lines that are comments or empty
+						if [[ ! $key =~ ^# && -n $key ]]; then
+							# Check if the key exists in the .env file
+							if ! grep -q "^$key=" .env; then
+								# If the key does not exist, add it to the .env file
+								value=$(eval "echo \"\$$key\"")
+								echo "$key=$value" >>.env
+							fi
+						fi
+					done <"$file"
+				done
+			fi
 			break
 		fi
 	done
+fi
+
+# If nvm is installed and .nvmrc exists, install the required node version
+if [[ -f .nvmrc && -s "$NVM_DIR/nvm.sh" ]]; then
+	NODE_VERSION=$(cat .nvmrc)
+	source "$NVM_DIR/nvm.sh"
+	nvm install "$NODE_VERSION"
+	nvm use "$NODE_VERSION"
 fi
