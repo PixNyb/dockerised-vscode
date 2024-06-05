@@ -6,7 +6,7 @@ RUN source /etc/os-release \
     && wget https://packages.microsoft.com/config/$ID/$VERSION_ID/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
     && dpkg -i packages-microsoft-prod.deb \
     && rm packages-microsoft-prod.deb \
-    && apt update -y \
+    && apt update -y && apt upgrade -y \
     && apt install -y dotnet-sdk-%dotnet-version%
 
 COPY bin/dotnet/* /usr/local/bin

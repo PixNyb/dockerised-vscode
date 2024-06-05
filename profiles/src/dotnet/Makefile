@@ -1,5 +1,5 @@
 DOCKERFILE := .Dockerfile.template
-DOTNET_VERSIONS := 6.0 7.0 8.0
+DOTNET_VERSIONS := 8.0
 
 .PHONY: all
 all:
