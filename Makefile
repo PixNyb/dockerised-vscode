@@ -4,8 +4,12 @@ define DOCKERFILES =
 $(shell find profiles/src -type f -name Dockerfile*)
 endef
 
+define SCRIPT_FOLDERS =
+$(shell find profiles/src -type d -name scripts)
+endef
+
 .PHONY: all
-all: run-makefiles generate-dockerfiles generate-json
+all: run-makefiles generate-dockerfiles export-scripts generate-json
 
 .PHONY: run-makefiles
 run-makefiles:
@@ -28,6 +32,17 @@ generate-dockerfiles:
         sed 's/%image%/code:latest/g' $$file > profiles/dist/code/Dockerfile.$$PROFILE_TAG ; \
         sed 's/%image%/code:insiders-latest/g' $$file > profiles/dist/code-insiders/Dockerfile.$$PROFILE_TAG ; \
     done
+
+.PHONY: export-scripts
+export-scripts:
+	@for dir in $(call SCRIPT_FOLDERS); do \
+        PROFILE_PATH=`dirname $$dir` ; \
+        PROFILE_NAME=`basename $$PROFILE_PATH` ; \
+		mkdir -p profiles/dist/code/bin/$$PROFILE_NAME ; \
+		mkdir -p profiles/dist/code-insiders/bin/$$PROFILE_NAME ; \
+		cp -r $$dir/* profiles/dist/code/bin/$$PROFILE_NAME ; \
+		cp -r $$dir/* profiles/dist/code-insiders/bin/$$PROFILE_NAME ; \
+	done
 
 .PHONY: generate-json
 generate-json:

@@ -138,7 +138,7 @@ jobs:
       - name: Build and push code
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: profiles/dist/${{ matrix.release }}
           file: profiles/dist/${{ matrix.release }}/Dockerfile.${{ matrix.profile }}
           push: true
           tags: |

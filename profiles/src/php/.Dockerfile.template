@@ -36,9 +36,16 @@ RUN curl -sS https://getcomposer.org/installer | php \
 
 RUN echo 'export PATH="$PATH:/home/vscode/.composer/vendor/bin"' >> /home/vscode/.bashrc
 
+RUN sed -i "s|</VirtualHost>|    <Directory /var/www/html>\n        Options Indexes FollowSymLinks\n        AllowOverride All\n        Require all granted\n    </Directory>\n</VirtualHost>|g" /etc/apache2/sites-available/000-default.conf
+RUN sed -i "s|export APACHE_RUN_USER=www-data|export APACHE_RUN_USER=$USER|g" /etc/apache2/envvars
+RUN sed -i "s|export APACHE_RUN_GROUP=www-data|export APACHE_RUN_GROUP=$USER|g" /etc/apache2/envvars
 RUN a2enmod rewrite
 
-RUN chmod 777 /var/www/html
+COPY bin/php/* /usr/local/bin
+RUN chmod +x /usr/local/bin/*
+
+ENV PHP_VERSION=%php-version%
+ENV WITH_NODE=false
 
 USER vscode
 
