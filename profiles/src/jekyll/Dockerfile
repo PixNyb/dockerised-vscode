@@ -19,17 +19,17 @@ RUN apt-get update && apt-get install -y \
     && sudo rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/rbenv/rbenv.git /home/vscode/.rbenv
-RUN git clone https://github.com/rbenv/ruby-build.git /home/vscode/.rbenv/plugins/ruby-build
+RUN git clone https://github.com/rbenv/ruby-build.git /home/vscode/.rbenv/plugins/ruby-build \
+    && /home/vscode/.rbenv/plugins/ruby-build/install.sh
 
-RUN echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >>/home/vscode/.bashrc
 RUN echo 'eval "$(rbenv init -)"' >>/home/vscode/.bashrc
 
-RUN . /home/vscode/.bashrc \
+ENV PATH="/home/vscode/.rbenv/bin:/home/vscode/.rbenv/shims:$PATH"
+
+RUN source /home/vscode/.bashrc \
     && RUBY_VERSION=$(rbenv install -l | grep -v - | tail -1) \
     && rbenv install $RUBY_VERSION \
     && rbenv global $RUBY_VERSION
-
-ENV PATH="/home/vscode/.rbenv/bin:/home/vscode/.rbenv/shims:$PATH"
 
 RUN gem install jekyll bundler
 
