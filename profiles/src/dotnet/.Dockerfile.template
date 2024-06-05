@@ -1,0 +1,35 @@
+FROM pixnyb/%image% as base
+
+USER root
+
+RUN source /etc/os-release \
+    && wget https://packages.microsoft.com/config/$ID/$VERSION_ID/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
+    && dpkg -i packages-microsoft-prod.deb \
+    && rm packages-microsoft-prod.deb \
+    && apt update -y \
+    && apt install -y dotnet-sdk-%dotnet-version%
+
+COPY bin/dotnet/* /usr/local/bin
+RUN chmod +x /usr/local/bin/*
+
+# COPY templates/dotnet/* /etc/templates
+
+ENV DOTNET_VERSION=%dotnet-version%
+ENV WITH_NODE=false
+
+USER vscode
+
+ENV INITIAL_EXTENSIONS="ms-dotnettools.csdevkit,ms-dotnettools.csharp,ms-dotnettools.dotnet-interactive-vscode,ms-dotnettools.vscode-dotnet-runtime,ionide.ionide-fsharp"
+
+# Check if EXTENSION_LIST is already set and append the new extensions if it is
+RUN if [ -n "${EXTENSION_LIST}" ]; then \
+    EXTENSION_LIST="${EXTENSION_LIST},${INITIAL_EXTENSIONS}"; \
+    else \
+    EXTENSION_LIST="${INITIAL_EXTENSIONS}"; \
+    fi \
+    && export EXTENSION_LIST
+
+# Set EXTENSION_LIST as a global environment variable
+ENV EXTENSION_LIST=${EXTENSION_LIST}
+
+EXPOSE 80

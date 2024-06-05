@@ -103,3 +103,12 @@ if [[ -f .nvmrc && -s "$NVM_DIR/nvm.sh" ]]; then
 	nvm install "$NODE_VERSION"
 	nvm use "$NODE_VERSION"
 fi
+
+echo "echo -e 'You are currently running a \033[1;36mPHP\033[0m generic container.'" >>~/.bashrc
+echo "echo -e 'Included scripts:'" >>~/.bashrc
+echo "echo -e '  - \033[1;34mimport-db\033[0m: Import a database dump into the database'" >>~/.bashrc
+echo "echo -e '    - \033[1;90mUsage\033[0m: import-db <sql_file>'" >>~/.bashrc
+echo "echo -e '  - \033[1;34mexport-db\033[0m: Export the database into a dump file'" >>~/.bashrc
+echo "echo -e '    - \033[1;90mUsage\033[0m: export-db <dump_file>'" >>~/.bashrc
+echo "echo -e '  - \033[1;34mclear-db\033[0m: Remove all tables from the database'" >>~/.bashrc
+echo "echo -e '    - \033[1;90mUsage\033[0m: clear-db <dump_file>'" >>~/.bashrc

@@ -26,7 +26,5 @@ all:
 clean:
 	@for version in $(PHP_VERSIONS); do \
 		rm -f Dockerfile.$$version ; \
-		for node_version in $(NODE_VERSIONS); do \
-			rm -f Dockerfile.$$version-node-$$node_version ; \
-		done ; \
+		rm -f Dockerfile.$$version-node ; \
 	done
