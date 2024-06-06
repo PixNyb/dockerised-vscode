@@ -109,7 +109,8 @@ if [[ -n ${REPO_URL-} ]]; then
     fi
 fi
 
-source /usr/local/bin/initialise-vscode.sh
+source /usr/local/bin/load-extensions.sh
+/usr/local/bin/initialise-vscode.sh
 
 if [ -n "${INIT_SCRIPT_URL-}" ]; then
 	curl -sSL "${INIT_SCRIPT_URL}" | bash;

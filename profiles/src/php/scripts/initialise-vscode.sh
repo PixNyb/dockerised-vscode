@@ -4,14 +4,6 @@ PROJECT_FOLDER=${PROJECT_FOLDER:-~/project}
 PROJECT_NAME=${PROJECT_NAME:-project}
 PROJECT_NAME=$(echo $PROJECT_NAME | sed 's/[^a-zA-Z0-9]/_/g')
 
-extensions="bmewburn.vscode-intelephense-client,porifa.laravel-intelephense,xdebug.php-debug,devsense.profiler-php-vscode,devsense.composer-php-vscode"
-if [ -z "$EXTENSION_LIST" ]; then
-	EXTENSION_LIST=$extensions
-else
-	EXTENSION_LIST="$EXTENSION_LIST,$extensions"
-fi
-export EXTENSION_LIST
-
 DB_HOST=${DB_HOST-}
 DB_PORT=${DB_PORT:-3306}
 DB_USER=${DB_USER:-root}
