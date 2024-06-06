@@ -98,12 +98,13 @@ if [[ -f composer.json && ! -f .env ]]; then
 	done
 fi
 
-# If nvm is installed and .nvmrc exists, install the required node version
-if [[ -f .nvmrc && -s "$NVM_DIR/nvm.sh" ]]; then
-	NODE_VERSION=$(cat .nvmrc)
-	source "$NVM_DIR/nvm.sh"
-	nvm install "$NODE_VERSION"
-	nvm use "$NODE_VERSION"
+if [ -d "$HOME/.nvm/.git" ]; then
+	if [ -f .nvmrc ]; then
+		NODE_VERSION=$(cat .nvmrc)
+		source "$NVM_DIR/nvm.sh"
+		nvm install "$NODE_VERSION"
+		nvm use "$NODE_VERSION"
+	fi
 
 	# If the project contains a package-lock.json file, install the dependencies
 	if [[ -f package-lock.json ]]; then
