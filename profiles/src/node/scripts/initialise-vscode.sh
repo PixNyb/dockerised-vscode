@@ -8,6 +8,8 @@ PROJECT_NAME=$(echo $PROJECT_NAME | sed 's/[^a-zA-Z0-9]/_/g')
 cd $PROJECT_FOLDER
 
 if [ -d "$HOME/.nvm/.git" ]; then
+	. "$HOME/.nvm/nvm.sh"
+
 	if [ -f .nvmrc ]; then
 		NODE_VERSION=$(cat .nvmrc)
 		source "$NVM_DIR/nvm.sh"

@@ -99,6 +99,8 @@ if [[ -f composer.json && ! -f .env ]]; then
 fi
 
 if [ -d "$HOME/.nvm/.git" ]; then
+	. "$HOME/.nvm/nvm.sh"
+
 	if [ -f .nvmrc ]; then
 		NODE_VERSION=$(cat .nvmrc)
 		source "$NVM_DIR/nvm.sh"
