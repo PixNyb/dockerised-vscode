@@ -30,6 +30,7 @@ RUN source /home/vscode/.bashrc \
     && RUBY_VERSION=$(rbenv install -l | grep -v - | tail -1) \
     && rbenv install $RUBY_VERSION \
     && rbenv global $RUBY_VERSION \
+    && rbenv rehash \
     && gem install jekyll bundler
 
 COPY bin/jekyll/* /usr/local/bin
