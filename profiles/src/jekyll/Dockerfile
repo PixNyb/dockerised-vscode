@@ -29,9 +29,8 @@ ENV PATH="/home/vscode/.rbenv/bin:/home/vscode/.rbenv/shims:$PATH"
 RUN source /home/vscode/.bashrc \
     && RUBY_VERSION=$(rbenv install -l | grep -v - | tail -1) \
     && rbenv install $RUBY_VERSION \
-    && rbenv global $RUBY_VERSION
-
-RUN gem install jekyll bundler
+    && rbenv global $RUBY_VERSION \
+    && gem install jekyll bundler
 
 COPY bin/jekyll/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
