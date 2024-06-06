@@ -118,13 +118,12 @@ if [ -n "${INIT_SCRIPT_URL-}" ]; then
 	curl -sSL "${INIT_SCRIPT_URL}" | bash; 
 fi
 
-VSCODE_CLI_USE_FILE_KEYRING=1 \
-VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT=1 \
-code serve-web
-    --disable-telemetry
-    --without-connection-token
-    --accept-server-license-terms
-    --host 0.0.0.0 &
+VSCODE_CLI_USE_FILE_KEYRING=1 VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT=1 \
+	code serve-web \
+    	--disable-telemetry \
+    	--without-connection-token \
+    	--accept-server-license-terms \
+    	--host 0.0.0.0 &
 
 VS_CODE_PID=$!
 
