@@ -31,7 +31,7 @@ if [[ -n ${EXTENSION_LIST} ]]; then
 	IFS=',' read -r -a extensions <<<"${EXTENSION_LIST}"
 	for extension in "${extensions[@]}"; do
 		# Install the extension
-		code --install-extension "${extension}" --force || echo "Failed to install ${extension}" &
-		$CODE_SERVER_PATH --install-extension "${extension}" --force || echo "Failed to install ${extension}" &
+		code --install-extension "${extension}" --force || echo "Failed to install ${extension}"
+		$CODE_SERVER_PATH --install-extension "${extension}" --force || echo "Failed to install ${extension}"
 	done
 fi
