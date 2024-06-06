@@ -1,6 +1,5 @@
 #!/bin/bash
 set -o pipefail -o nounset
-: "${VSCODE_KEYRING_PASS:?Variable not set or empty}"
 
 # Make sure all the variables are set
 REPO_URL=${REPO_URL-}

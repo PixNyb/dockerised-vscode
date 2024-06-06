@@ -31,7 +31,6 @@ To run the Docker container, you can use the following command:
 docker run \
     -p 8000:8000 \
     -p 2222:22 \
-    -e VSCODE_KEYRING_PASS=mysecretpassword \
     -v /var/run/docker.sock:/var/run/docker.sock
     -v /path/to/workspace:/home/vscode/workspace
     pixnyb/code
@@ -54,7 +53,6 @@ The following tags are available:
 
 When running the container, you can pass the following environment variables to customise the container:
 
-- `VSCODE_KEYRING_PASS`: The password to use for the keyring. (Required)
 - `GH_TOKEN`: The GitHub personal access token to use for authentication in the GitHub CLI and in turn git. (Optional)
 - `GPG_SECRET_KEY`: The GPG secret key to use for signing commits. (Optional, base64)
 - `GPG_PASSPHRASE`: The passphrase for the GPG secret key. (Optional)
@@ -147,7 +145,6 @@ services:
     ports:
       - 8000:8000
     environment:
-      - VSCODE_KEYRING_PASS=password
       - GIT_GLOBAL_USER_NAME=PixNyb
       - GIT_GLOBAL_USER_EMAIL=contact@roelc.me
       - GH_TOKEN=<...>
