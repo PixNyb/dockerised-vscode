@@ -18,17 +18,4 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | b
     && nvm use node \
     && npm install -g yarn
 
-ENV INITIAL_EXTENSIONS="christian-kohler.npm-intellisense,christian-kohler.path-intellisense,dbaeumer.vscode-eslint,esbenp.prettier-vscode,formulahendry.auto-close-tag,formulahendry.auto-rename-tag"
-
-# Check if EXTENSION_LIST is already set and append the new extensions if it is
-RUN if [ -n "${EXTENSION_LIST}" ]; then \
-    EXTENSION_LIST="${EXTENSION_LIST},${INITIAL_EXTENSIONS}"; \
-    else \
-    EXTENSION_LIST="${INITIAL_EXTENSIONS}"; \
-    fi \
-    && export EXTENSION_LIST
-
-# Set EXTENSION_LIST as a global environment variable
-ENV EXTENSION_LIST=${EXTENSION_LIST}
-
 EXPOSE 80

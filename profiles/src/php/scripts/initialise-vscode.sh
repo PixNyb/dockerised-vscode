@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# Add extension to the list of extensions
+extensions=(
+	"bmewburn.vscode-intelephense-client"
+	"porifa.laravel-intelephense"
+	"xdebug.php-debug"
+	"devsense.profiler-php-vscode"
+	"devsense.composer-php-vscode"
+)
+
+IFS=','
+EXTENSION_LIST=${extensions[*]} /usr/local/bin/install-extensions.sh
+unset IFS
+
 PROJECT_FOLDER=${PROJECT_FOLDER:-~/project}
 PROJECT_NAME=${PROJECT_NAME:-project}
 PROJECT_NAME=$(echo $PROJECT_NAME | sed 's/[^a-zA-Z0-9]/_/g')
@@ -43,6 +56,10 @@ if [[ -n $DB_HOST && $DB_USER == "root" ]]; then
 		DB_PASSWORD=$DB_USER_PASSWORD
 		export DB_USER
 		export DB_PASSWORD
+
+		echo "export DB_USER=$DB_USER" >>~/.bashrc
+		echo "export DB_PASSWORD=$DB_PASSWORD" >>~/.bashrc
+		echo "export DB_DATABASE=$DB_DATABASE" >>~/.bashrc
 	fi
 fi
 
@@ -52,8 +69,6 @@ sudo ln -s "${PROJECT_FOLDER}" /var/www/html
 
 # Start Apache
 sudo service apache2 start
-
-echo "echo -e 'You are currently running a \033[1;36mPHP\033[0m generic container.'" >>~/.bashrc
 
 # Set up the PHP project
 cd "${PROJECT_FOLDER}" || exit
@@ -102,6 +117,16 @@ if [[ -f .nvmrc && -s "$NVM_DIR/nvm.sh" ]]; then
 	source "$NVM_DIR/nvm.sh"
 	nvm install "$NODE_VERSION"
 	nvm use "$NODE_VERSION"
+
+	# If the project contains a package-lock.json file, install the dependencies
+	if [[ -f package-lock.json ]]; then
+		npm install &
+	fi
+
+	# If the project contains a yarn.lock file, install the dependencies
+	if [[ -f yarn.lock ]]; then
+		npm install -g yarn && yarn install &
+	fi
 fi
 
 echo "echo -e 'You are currently running a \033[1;36mPHP\033[0m generic container.'" >>~/.bashrc

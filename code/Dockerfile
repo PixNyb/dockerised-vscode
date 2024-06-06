@@ -16,7 +16,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   gnupg gnome-keyring wget curl python3-minimal ca-certificates \
   git ssh build-essential \
   unzip zip vim \
+  locales \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+RUN locale-gen en_US.UTF-8
+
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+RUN dpkg-reconfigure --frontend=noninteractive locales \
+  && update-locale LANG=en_US.UTF-8
 
 # Add the GitHub CLI GPG key
 RUN mkdir -p -m 755 /etc/apt/keyrings \

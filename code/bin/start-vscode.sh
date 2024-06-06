@@ -85,32 +85,28 @@ fi
 
 # If the container has the REPO_URL environment variable, clone it to $REPO_FOLDER/. Otherwise use the home folder
 if [[ -n ${REPO_URL-} ]]; then
-	repo_folder=${REPO_FOLDER:-~/}
-	repo_folder=${repo_folder%/}
-	project_name=$(basename "${REPO_URL}" .git)
-	mkdir -p "${repo_folder}"
-	git clone "${REPO_URL}" "${repo_folder}/${project_name}"
-	export PROJECT_FOLDER="${repo_folder}/${project_name}"
-	export PROJECT_NAME="${project_name}"
+    repo_folder=${REPO_FOLDER:-~/}
+    repo_folder=${repo_folder%/}
+    project_name=$(basename "${REPO_URL}" .git)
+    mkdir -p "${repo_folder}"
+    git clone "${REPO_URL}" "${repo_folder}/${project_name}"
+    export PROJECT_FOLDER="${repo_folder}/${project_name}"
+    export PROJECT_NAME="${project_name}"
 
-	# If the REPO_BRANCH environment variable is set, checkout that branch
-	if [[ -n ${REPO_BRANCH-} ]]; then
-		curdir=$(pwd)
-		cd "${repo_folder}/${project_name}" || exit
+    # If the REPO_BRANCH environment variable is set, checkout that branch
+    if [[ -n ${REPO_BRANCH-} ]]; then
+        curdir=$(pwd)
+        cd "${repo_folder}/${project_name}" || exit
 
-		if git show-ref --verify --quiet "refs/heads/${REPO_BRANCH}"; then
-			if ! git ls-remote --exit-code --heads "${REPO_URL}" "${REPO_BRANCH}" &>/dev/null; then
-				REPO_BRANCH=$(git ls-remote --heads "${REPO_URL}" | grep -oP 'refs/heads/\K.*' | head -n1)
-			fi
+        if git ls-remote --exit-code --heads "${REPO_URL}" "${REPO_BRANCH}" &>/dev/null; then
+            git checkout "${REPO_BRANCH}"
+        else
+            git checkout -b "${REPO_BRANCH}"
+        fi
 
-			git checkout "${REPO_BRANCH}"
-		else
-			git checkout -b "${REPO_BRANCH}"
-		fi
-
-		export PROJECT_BRANCH="${REPO_BRANCH}"
-		cd "${curdir}" || exit
-	fi
+        export PROJECT_BRANCH="${REPO_BRANCH}"
+        cd "${curdir}" || exit
+    fi
 fi
 
 /usr/local/bin/initialise-vscode.sh

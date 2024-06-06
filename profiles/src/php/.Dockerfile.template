@@ -52,17 +52,4 @@ ENV WITH_NODE=false
 
 USER vscode
 
-ENV INITIAL_EXTENSIONS="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag"
-
-# Check if EXTENSION_LIST is already set and append the new extensions if it is
-RUN if [ -n "${EXTENSION_LIST}" ]; then \
-    EXTENSION_LIST="${EXTENSION_LIST},${INITIAL_EXTENSIONS}"; \
-    else \
-    EXTENSION_LIST="${INITIAL_EXTENSIONS}"; \
-    fi \
-    && export EXTENSION_LIST
-
-# Set EXTENSION_LIST as a global environment variable
-ENV EXTENSION_LIST=${EXTENSION_LIST}
-
 EXPOSE 80

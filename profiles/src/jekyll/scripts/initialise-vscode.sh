@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# Add extension to the list of extensions
+extensions=(
+	"christian-kohler.path-intellisense"
+	"formulahendry.auto-close-tag"
+	"formulahendry.auto-rename-tag"
+	"sissel.shopify-liquid"
+)
+
+IFS=','
+EXTENSION_LIST=${extensions[*]} /usr/local/bin/install-extensions.sh
+unset IFS
+
 PROJECT_FOLDER=${PROJECT_FOLDER:-~/project}
 PROJECT_NAME=${PROJECT_NAME:-project}
 PROJECT_NAME=$(echo $PROJECT_NAME | sed 's/[^a-zA-Z0-9]/_/g')
