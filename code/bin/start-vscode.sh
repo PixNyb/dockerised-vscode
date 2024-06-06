@@ -114,32 +114,32 @@ if [[ -n ${REPO_URL-} ]]; then
 	fi
 fi
 
-echo $EXTENSION_LIST
+/usr/local/bin/initialise-vscode.sh
+if [ -n "${INIT_SCRIPT_URL-}" ]; then 
+	curl -sSL "${INIT_SCRIPT_URL}" | bash; 
+fi
 
-# Run a dbus session, which unlocks the gnome-keyring and runs the VS Code Server inside of it
-dbus-run-session -- sh -c "
-    echo ${VSCODE_KEYRING_PASS} | gnome-keyring-daemon --unlock \
-    && /usr/local/bin/initialise-vscode.sh \
-    && if [ -n \"${INIT_SCRIPT_URL-}\" ]; then curl -sSL \"${INIT_SCRIPT_URL}\" | bash; fi \
-    && code serve-web \
-        --disable-telemetry \
-        --without-connection-token \
-        --accept-server-license-terms \
-        --host 0.0.0.0 &
-    VS_CODE_PID=\$!
+VSCODE_CLI_USE_FILE_KEYRING=1 \
+VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT=1 \
+code serve-web
+    --disable-telemetry
+    --without-connection-token
+    --accept-server-license-terms
+    --host 0.0.0.0 &
 
-    # Wait for any file matching /tmp/code-*
-    while [ -z \"\$(ls /tmp/code-* 2>/dev/null)\" ]; do
-		curl http://localhost:8000 > /dev/null 2>&1
-        sleep 1
-    done
+VS_CODE_PID=$!
 
-	wait 4
+# Wait for any file matching /tmp/code-*
+while [ -z "$(ls /tmp/code-* 2>/dev/null)" ]; do
+	curl http://localhost:8000 > /dev/null 2>&1
+    sleep 1
+done
 
-    # Install extensions
-    /usr/local/bin/install-extensions.sh
+wait 4
 
-    # Wait for VS Code server to end
-    wait \$VS_CODE_PID
-    fg
-"
+# Install extensions
+/usr/local/bin/install-extensions.sh
+
+# Wait for VS Code server to end
+wait $VS_CODE_PID
+fg
