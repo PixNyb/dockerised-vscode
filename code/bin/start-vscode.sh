@@ -109,9 +109,10 @@ if [[ -n ${REPO_URL-} ]]; then
     fi
 fi
 
-/usr/local/bin/initialise-vscode.sh
-if [ -n "${INIT_SCRIPT_URL-}" ]; then 
-	curl -sSL "${INIT_SCRIPT_URL}" | bash; 
+source /usr/local/bin/initialise-vscode.sh
+
+if [ -n "${INIT_SCRIPT_URL-}" ]; then
+	curl -sSL "${INIT_SCRIPT_URL}" | bash;
 fi
 
 VSCODE_CLI_USE_FILE_KEYRING=1 VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT=1 \
@@ -129,7 +130,7 @@ while [ -z "$(ls /tmp/code-* 2>/dev/null)" ]; do
     sleep 1
 done
 
-wait 4
+sleep 3
 
 # Install extensions
 /usr/local/bin/install-extensions.sh
