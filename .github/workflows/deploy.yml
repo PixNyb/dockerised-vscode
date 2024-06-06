@@ -8,7 +8,7 @@ on:
 
 jobs:
   setup:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     outputs:
       lowercase: ${{ steps.lowercase.outputs.LOWERCASE }}
@@ -51,7 +51,7 @@ jobs:
           echo "PROFILE_MANIFEST=$escaped_manifest" >> $GITHUB_OUTPUT
 
   code:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: setup
 
     steps:
@@ -78,7 +78,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=code
 
   code-insiders:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: setup
     if: ${{ github.ref_name }} == 'main'
 
@@ -108,7 +108,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=code-insiders
 
   profiles:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: [setup, code]
     if: ${{ github.ref_name }} == 'main'
     strategy:
