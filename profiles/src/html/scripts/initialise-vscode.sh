@@ -1,19 +1,16 @@
 #!/bin/bash
 
-# Add extension to the list of extensions
-extensions=(
-	"christian-kohler.path-intellisense"
-	"formulahendry.auto-close-tag"
-	"formulahendry.auto-rename-tag"
-)
-
-IFS=','
-EXTENSION_LIST=${extensions[*]} /usr/local/bin/install-extensions.sh
-unset IFS
-
 PROJECT_FOLDER=${PROJECT_FOLDER:-~/project}
 PROJECT_NAME=${PROJECT_NAME:-project}
 PROJECT_NAME=$(echo $PROJECT_NAME | sed 's/[^a-zA-Z0-9]/_/g')
+
+extensions="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag"
+if [ -z "$EXTENSION_LIST" ]; then
+	EXTENSION_LIST=$extensions
+else
+	EXTENSION_LIST="$EXTENSION_LIST,$extensions"
+fi
+export EXTENSION_LIST
 
 # Link apache to $PROJECT_FOLDER
 sudo rm -rf /var/www/html

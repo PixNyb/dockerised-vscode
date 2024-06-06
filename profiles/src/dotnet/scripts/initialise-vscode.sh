@@ -1,21 +1,17 @@
 #!/bin/bash
 
-# Add extension to the list of extensions
-extensions=(
-	"ms-dotnettools.csdevkit"
-	"ms-dotnettools.csharp"
-	"ms-dotnettools.dotnet-interactive-vscode"
-	"ms-dotnettools.vscode-dotnet-runtime"
-	"ionide.ionide-fsharp"
-)
-
-IFS=','
-EXTENSION_LIST=${extensions[*]} /usr/local/bin/install-extensions.sh
-unset IFS
-
 PROJECT_FOLDER=${PROJECT_FOLDER:-~/project}
 PROJECT_NAME=${PROJECT_NAME:-project}
 PROJECT_NAME=$(echo $PROJECT_NAME | sed 's/[^a-zA-Z0-9]/_/g')
+EXTENSION_LIST=${EXTENSION_LIST:-}
+
+extensions="ms-dotnettools.csdevkit,ms-dotnettools.csharp,ms-dotnettools.dotnet-interactive-vscode,ms-dotnettools.vscode-dotnet-runtime,ionide.ionide-fsharp"
+if [ -z "$EXTENSION_LIST" ]; then
+	EXTENSION_LIST=$extensions
+else
+	EXTENSION_LIST="$EXTENSION_LIST,$extensions"
+fi
+export EXTENSION_LIST
 
 # Set up the .NET project
 cd $PROJECT_FOLDER
