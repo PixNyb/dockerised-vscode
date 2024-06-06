@@ -108,7 +108,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=code-insiders
 
   profiles:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [setup, code]
     if: ${{ github.ref_name }} == 'main'
     strategy:
