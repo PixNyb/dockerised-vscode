@@ -27,7 +27,6 @@ RUN pecl channel-update pecl.php.net \
     && pecl install %xdebug% \
     && echo "error_reporting=E_ALL" > /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
     && echo "zend_extension=$(find /usr/lib/php -name xdebug.so)" > /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
-    && echo "" > /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
     && echo "[xdebug]" > /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
     && echo "xdebug.remote_enable=1" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
     && echo "xdebug.remote_autostart=1" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
