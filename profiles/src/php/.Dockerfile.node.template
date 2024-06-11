@@ -24,13 +24,26 @@ RUN add-apt-repository ppa:ondrej/php -y && \
 RUN update-alternatives --set php /usr/bin/php%php-version%
 
 RUN pecl channel-update pecl.php.net \
-    && pecl install %xdebug% \
+    && pecl install xdebug \
+    && echo "error_reporting=E_ALL" > /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
     && echo "zend_extension=$(find /usr/lib/php -name xdebug.so)" > /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
+    && echo "" > /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
+    && echo "[xdebug]" > /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
     && echo "xdebug.remote_enable=1" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
-    && echo "xdebug.mode=debug" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
     && echo "xdebug.remote_autostart=1" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
+    && echo "xdebug.remote_connect_back=0" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
+    && echo "xdebug.remote_host=127.0.0.1" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
+    && echo "xdebug.remote_port=9003" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
+    && echo "xdebug.mode=debug" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
+    && echo "xdebug.start_with_request=yes" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
+    && echo "xdebug.client_host=127.0.0.1" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
+    && echo "xdebug.client_port=9003" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
     && echo "xdebug.idekey=VSCODE" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
-    && echo "xdebug.remote_log=/tmp/xdebug.log" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini
+    && echo "xdebug.log=/tmp/xdebug.log" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
+    && echo "xdebug.log_level=7" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
+    && echo "xdebug.max_nesting_level=256" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini
+
+# Note: Replace %php-version% with your actual PHP version, e.g., 7.4, 8.0, etc.
 
 RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer
