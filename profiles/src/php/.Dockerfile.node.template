@@ -24,7 +24,7 @@ RUN add-apt-repository ppa:ondrej/php -y && \
 RUN update-alternatives --set php /usr/bin/php%php-version%
 
 RUN pecl channel-update pecl.php.net \
-    && pecl install xdebug \
+    && pecl install %xdebug% \
     && echo "error_reporting=E_ALL" > /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
     && echo "zend_extension=$(find /usr/lib/php -name xdebug.so)" > /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
     && echo "" > /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
