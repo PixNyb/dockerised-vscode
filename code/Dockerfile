@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   git ssh build-essential \
   unzip zip vim \
   locales \
+  sendmail \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 RUN locale-gen en_US.UTF-8

@@ -11,16 +11,22 @@ GH_TOKEN=${GH_TOKEN-}
 INIT_SCRIPT_URL=${INIT_SCRIPT_URL-}
 EXTENSION_LIST=${EXTENSION_LIST-}
 EXTENSION_LIST_URL=${EXTENSION_LIST_URL-}
+SENDMAIL_HOST=${SMTP_HOST:-localhost}
+SENDMAIL_PORT=${SMTP_PORT:-25}
 
 # Make sure permissions for all mounted directories are correct
 USERNAME=$(whoami)
 sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 sudo chown -R ${USERNAME}:${USERNAME} /etc/home
 
+# Configure sendmail to use the SENDMAIL_HOST and SENDMAIL_PORT environment variables in the sendmail config
+sudo sh -c 'echo "define('SMART_HOST', '${SENDMAIL_HOST}:${SENDMAIL_PORT}')" >> /etc/mail/sendmail.mc'
+sudo sh -c 'm4 /etc/mail/sendmail.mc > /etc/mail/sendmail.cf'
+
 # Copy all files from /etc/home to the user's home directory if the /etc/home directory exists
 if [[ -d /etc/home ]]; then
-	cp -rf /etc/home/* ~
-	cp -rf /etc/home/.[^.]* ~
+	cp -rf /etc/home/* ~ 2>/dev/null
+	cp -rf /etc/home/.[^.]* ~ 2>/dev/null
 fi
 
 # Start SSH
