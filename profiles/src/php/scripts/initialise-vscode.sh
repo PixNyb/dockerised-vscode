@@ -87,7 +87,12 @@ if [[ -f composer.json && ! -f .env ]]; then
 							if ! grep -q "^$key=" .env; then
 								# If the key does not exist, add it to the .env file
 								value=$(eval "echo \"\$$key\"")
-								echo "$key=$value" >>.env
+								# If there's a value, echo it
+								if [[ -n $value ]]; then
+									echo "$key=$value" >>.env
+								else
+									echo "$key=\"\"" >>.env
+								fi
 							fi
 						fi
 					done <"$file"
