@@ -27,6 +27,6 @@ if [[ -n ${EXTENSION_LIST} ]]; then
 		# Install the extension
 		code --install-extension "${extension}" --force || echo "Failed to install ${extension}" &
 		$CODE_SERVER_PATH --install-extension "${extension}" --force || echo "Failed to install ${extension}" &
+		wait
 	done
-	wait
 fi
