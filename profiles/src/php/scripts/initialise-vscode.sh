@@ -17,11 +17,12 @@ if [[ -n $DB_HOST && $DB_USER == "root" ]]; then
 	RES=$?
 
 	# If the user is root, drop the existing user, create a new user with a random password and grant all privileges on the database
+	DB_USER_USERNAME=${DB_DATABASE}
 	DB_USER_PASSWORD=$(openssl rand -base64 12)
-	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "DROP USER IF EXISTS '$PROJECT_NAME'@'%';" 2>/dev/null
-	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "CREATE USER '$PROJECT_NAME'@'%' IDENTIFIED BY '$DB_USER_PASSWORD';" 2>/dev/null
+	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "DROP USER IF EXISTS '$DB_USER_USERNAME'@'%';" 2>/dev/null
+	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "CREATE USER '$DB_USER_USERNAME'@'%' IDENTIFIED BY '$DB_USER_PASSWORD';" 2>/dev/null
 	RES=$((RES + $?))
-	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$PROJECT_NAME'@'%';" 2>/dev/null
+	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USER_USERNAME'@'%';" 2>/dev/null
 	RES=$((RES + $?))
 	mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "FLUSH PRIVILEGES;" 2>/dev/null
 	RES=$((RES + $?))
@@ -34,12 +35,12 @@ if [[ -n $DB_HOST && $DB_USER == "root" ]]; then
 		echo "Initialised database using root user:"
 		echo "Host: $DB_HOST"
 		echo "Port: $DB_PORT"
-		echo "User: $PROJECT_NAME"
+		echo "User: $DB_USER_USERNAME"
 		echo "Password: $DB_USER_PASSWORD"
 		echo "Database: $DB_DATABASE"
 
 		# Set the DB_USER and DB_PASSWORD to the new user and password
-		DB_USER=$PROJECT_NAME
+		DB_USER=$DB_USER_USERNAME
 		DB_PASSWORD=$DB_USER_PASSWORD
 		export DB_USER
 		export DB_PASSWORD
@@ -53,6 +54,11 @@ fi
 # Link apache to $PROJECT_FOLDER
 sudo rm -rf /var/www/html
 sudo ln -s "${PROJECT_FOLDER}" /var/www/html
+
+# Set the github token in composer
+if [[ -n $GH_TOKEN ]]; then
+	composer config -g github-oauth.github.com "$GH_TOKEN"
+fi
 
 # Start Apache
 sudo service apache2 start
