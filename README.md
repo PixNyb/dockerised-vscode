@@ -42,12 +42,27 @@ The image is availlable on [Docker Hub](https://hub.docker.com/r/pixnyb/code).
 
 The following tags are available:
 
-| Tag              | Description                                                      |
-| ---------------- | ---------------------------------------------------------------- |
-| `latest`         | The latest stable version of Visual Studio Code.                 |
-| `insiders`       | The latest insider version of Visual Studio Code.                |
-| `<sha>`          | A specific commit of the Dockerised Visual Studio Code.          |
-| `<sha>`-insiders | A specific commit of the Dockerised Visual Studio Code Insiders. |
+| Tag        | Description                                       |
+| ---------- | ------------------------------------------------- |
+| `latest`   | The latest stable version of Visual Studio Code.  |
+| `insiders` | The latest insider version of Visual Studio Code. |
+
+#### Profiles
+
+The repository also builds development containers with additional software and extensions for specific programming languages and toolkits. These containers are available on [Docker Hub](https://hub.docker.com/r/pixnyb/code) with the following tags:
+
+| Categorty | Tag                                        | Description                                                                                            |
+| --------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| Basic     | [`html`](profiles/src/html/)               | A basic HTML environment, only includes additional extensions.                                         |
+| Basic     | [`jekyll`](profiles/src/jekyll/)           | A basic Jekyll environment.                                                                            |
+| Basic     | [`tex`](profiles/src/tex/)                 | A basic LaTeX environment.                                                                             |
+| Web       | [`node`](profiles/src/node/)               | Includes NVM and installs the latest version of node.                                                  |
+| Web       | [`php-<version>`](profiles/src/php/)       | Includes PHP and Composer. (Available versions: `7.2`, `7.3`, `7.4`, `8.0`, `8.1`, `8.2`, `8.3`)       |
+| Web       | [`php-<version>-node`](profiles/src/php/)  | Includes PHP, Composer, and NVM. (Available versions: `7.2`, `7.3`, `7.4`, `8.0`, `8.1`, `8.2`, `8.3`) |
+| Web       | [`dotnet-<version>`](profiles/src/dotnet/) | Includes .NET SDK and runtime. (Available versions: `8.0`)                                             |
+
+> [!NOTE]
+> The pre-built development containers are based on the `latest` tag of the base image. If you want to use `insiders` instead, you can build the image yourself and use the `insiders` tag.
 
 #### Environment Variables
 
@@ -157,10 +172,6 @@ services:
 ```
 
 In this example, we mount the host's timezone configuration and Docker socket to the container. We also mount a custom shell script to the container that will be run when the container starts. This shell script can be used to install additional tools and extensions specific to your needs.
-
-## Pre-made Specialised Containers
-
-In the [Dockerised VSCode Scripts](https://github.com/PixNyb/dockerised-vscode-scripts) repository, you can find pre-made specialised containers for various programming languages and toolkits. These containers include additional tools and extensions specific to the language or toolkit to help you get started quickly.
 
 ## Disclaimer
 
