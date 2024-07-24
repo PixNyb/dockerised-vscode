@@ -36,6 +36,17 @@ port           $SENDMAIL_PORT
 from           $EMAIL
 EOF
 
+# Create a binary for sendmail that ignores arguments that msmtprc doesn't support
+sudo mv /usr/sbin/sendmail /usr/sbin/sendmail.bin
+sudo tee /usr/sbin/sendmail << EOF > /dev/null
+#!/bin/bash
+# Remove the -bs option
+ARGS=\$(echo "$@" | sed -e 's/-bs//g')
+# Call msmtp with the modified arguments
+/usr/sbin/sendmail.bin \$ARGS
+EOF
+sudo chmod +x /usr/sbin/sendmail 2>/dev/null
+
 # Make the log file writable
 sudo touch /var/log/msmtp.log
 sudo chmod 777 /var/log/msmtp.log
