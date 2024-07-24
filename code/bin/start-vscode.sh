@@ -13,15 +13,30 @@ EXTENSION_LIST=${EXTENSION_LIST-}
 EXTENSION_LIST_URL=${EXTENSION_LIST_URL-}
 SENDMAIL_HOST=${SENDMAIL_HOST:-localhost}
 SENDMAIL_PORT=${SENDMAIL_PORT:-25}
+HOSTNAME=$(hostname)
+USERNAME=$(whoami)
 
 # Make sure permissions for all mounted directories are correct
-USERNAME=$(whoami)
 sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 sudo chown -R ${USERNAME}:${USERNAME} /etc/home
 
-# Configure sendmail to use the SENDMAIL_HOST and SENDMAIL_PORT environment variables in the sendmail config
-sudo sh -c 'echo "define('SMART_HOST', '${SENDMAIL_HOST}:${SENDMAIL_PORT}')" >> /etc/mail/sendmail.mc'
-sudo sh -c 'm4 /etc/mail/sendmail.mc > /etc/mail/sendmail.cf'
+# Replace all invalid characters with _
+EMAIL=$(echo "$HOSTNAME" | tr -cd '[:alnum:]_.-' | tr '[:upper:]' '[:lower:]')@roelc.dev
+
+# Configure msmtp
+sudo tee /etc/msmtprc << EOF > /dev/null
+defaults
+auth           off
+tls            off
+logfile        /var/log/msmtp.log
+
+account        default
+host           $SENDMAIL_HOST
+port           $SENDMAIL_PORT
+from           $EMAIL
+
+account default : default
+EOF
 
 # Copy all files from /etc/home to the user's home directory if the /etc/home directory exists
 if [[ -d /etc/home ]]; then
