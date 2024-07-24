@@ -20,6 +20,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   msmtp-mta \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
+ENV MAILER_DSN="sendmail://default?command=/usr/sbin/sendmail%20-t"
+
 RUN locale-gen en_US.UTF-8
 
 ENV LANG=en_US.UTF-8
