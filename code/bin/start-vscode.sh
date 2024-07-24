@@ -41,7 +41,7 @@ sudo mv /usr/sbin/sendmail /usr/sbin/sendmail.bin
 sudo tee /usr/sbin/sendmail << EOF > /dev/null
 #!/bin/bash
 # Remove the -bs option
-ARGS=\$(echo "$@" | sed -e 's/-bs//g')
+ARGS=\$(echo "\$@" | sed -e 's/-bs//g')
 # Call msmtp with the modified arguments
 /usr/sbin/sendmail.bin \$ARGS
 EOF
