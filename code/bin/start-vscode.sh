@@ -34,9 +34,11 @@ account        default
 host           $SENDMAIL_HOST
 port           $SENDMAIL_PORT
 from           $EMAIL
-
-account default : default
 EOF
+
+# Make the log file writable
+sudo touch /var/log/msmtp.log
+sudo chmod 777 /var/log/msmtp.log
 
 # Copy all files from /etc/home to the user's home directory if the /etc/home directory exists
 if [[ -d /etc/home ]]; then
