@@ -68,7 +68,6 @@ RUN if [ "${ENABLE_X11}" = "1" ]; then \
   apt-get update && apt-get install -y --no-install-recommends \
   xvfb \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
-  && Xvfb ${DISPLAY} -screen 0 1024x768x24; \
   fi
 
 # Install Docker using https://get.docker.com

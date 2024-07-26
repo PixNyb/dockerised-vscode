@@ -1,6 +1,11 @@
 #!/bin/bash
 set -o pipefail -o nounset
 
+# Check if Xvfb is installed, if it is, start it
+if command -v Xvfb &>/dev/null; then
+	Xvfb ${DISPLAY} -screen 0 1920x1080x24 &
+fi
+
 # Make sure all the variables are set
 REPO_URL=${REPO_URL-}
 REPO_FOLDER=${REPO_FOLDER-}
