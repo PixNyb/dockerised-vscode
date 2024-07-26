@@ -16,6 +16,7 @@ During the build process, you can pass the following arguments to customise the 
 
 - `USERNAME`: The username to use when running the container. Defaults to `vscode`.
 - `CODE_INSIDERS`: Whether to install Visual Studio Code Insiders instead of Visual Studio Code. If this argument is set, Visual Studio Code Insiders will be installed instead of Visual Studio Code. Defaults to ``.
+- `ENABLE_X11`: Whether to enable X11 server. If this argument is set, the X11 server will be enabled. Defaults to `1` (enabled).
 
 For example, to build the image with a custom username:
 
