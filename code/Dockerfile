@@ -67,7 +67,7 @@ RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/s
 RUN if [ "${ENABLE_X11}" = "1" ]; then \
   apt-get update && apt-get install -y --no-install-recommends \
   xvfb \
-  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
+  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*; \
   fi
 
 # Install Docker using https://get.docker.com
