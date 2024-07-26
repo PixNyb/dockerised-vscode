@@ -43,8 +43,6 @@ RUN pecl channel-update pecl.php.net \
     && echo "xdebug.log_level=7" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini \
     && echo "xdebug.max_nesting_level=256" >> /etc/php/%php-version%/apache2/conf.d/20-xdebug.ini
 
-# Note: Replace %php-version% with your actual PHP version, e.g., 7.4, 8.0, etc.
-
 RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer
 

@@ -1,0 +1,17 @@
+FROM pixnyb/%image% as base
+
+USER root
+
+RUN apt-get update && apt-get install -y \
+    openjdk-21-jdk \
+    gradle \
+    maven \
+    ant \
+    && sudo rm -rf /var/lib/apt/lists/*
+
+COPY bin/java/* /usr/local/bin
+RUN chmod +x /usr/local/bin/*
+
+ENV JAVA_VERSION=21
+
+USER vscode

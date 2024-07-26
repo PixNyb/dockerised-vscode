@@ -95,7 +95,7 @@ if [[ -f composer.json && ! -f .env ]]; then
 								value=$(eval "echo \"\$$key\"")
 								# If there's a value, echo it
 								if [[ -n $value ]]; then
-									echo "$key=$value" >>.env
+									echo "$key=\"$value\"" >>.env
 								else
 									echo "$key=\"\"" >>.env
 								fi
