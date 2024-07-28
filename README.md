@@ -16,7 +16,6 @@ During the build process, you can pass the following arguments to customise the 
 
 - `USERNAME`: The username to use when running the container. Defaults to `vscode`.
 - `CODE_INSIDERS`: Whether to install Visual Studio Code Insiders instead of Visual Studio Code. If this argument is set, Visual Studio Code Insiders will be installed instead of Visual Studio Code. Defaults to ``.
-- `ENABLE_X11`: Whether to enable X11 server. If this argument is set, the X11 server will be enabled. Defaults to `1` (enabled).
 
 For example, to build the image with a custom username:
 
@@ -80,6 +79,7 @@ When running the container, you can pass the following environment variables to 
 - `INIT_SCRIPT_URL`: The URL of a shell script to run when the container starts. (Optional)
 - `EXTENSION_LIST`: A list of Visual Studio Code extensions to install separated by commas. (Optional, e.g `ms-python.python,ms-vscode.cpptools`)
 - `EXTENSION_LIST_URL`: The URL of a file containing a list of Visual Studio Code extensions to install separated by newlines. (Optional, e.g. `https://example.com/extensions.txt`)
+- `ENABLE_VNC`: Whether to enable VNC server. (Optional, `true` or `false`)
 
 > [!NOTE]
 > In order to insert a GPG secret key, you need to base64 encode the contents of the GPG secret key file and pass it as the `GPG_SECRET_KEY` environment variable.
@@ -96,6 +96,9 @@ When running the container, you can pass the following environment variables to 
 
 > [!NOTE]
 > The `EXTENSION_LIST_URL` environment variable can be used to install a list of Visual Studio Code extensions from a file. It can also be, itself, a list of URLs separated by commas. The file should contain a list of Visual Studio Code extensions separated by newlines.
+
+> [!NOTE]
+> The `ENABLE_VNC` environment variable can be used to enable a VNC server in the container. It forwards the X11 display to a VNC server running on port 5900. You can connect to the VNC server using a VNC client (e.g. RealVNC Viewer) with no password.
 
 ##### Git Configuration
 

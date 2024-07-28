@@ -7,7 +7,6 @@ RUN userdel -r ubuntu || true
 
 ARG USERNAME=vscode
 ARG CODE_INSIDERS
-ARG ENABLE_X11=1
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DISPLAY=:0
@@ -23,6 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   unzip zip vim \
   locales \
   msmtp-mta \
+  xvfb x11vnc \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 ENV MAILER_DSN="sendmail://default?command=/usr/sbin/sendmail%20-t"
@@ -61,14 +61,6 @@ RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/s
   && sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' /etc/ssh/sshd_config \
   && sed -i 's/#ClientAliveInterval 0/ClientAliveInterval 60/' /etc/ssh/sshd_config \
   && sed -i 's/#ClientAliveCountMax 3/ClientAliveCountMax 3/' /etc/ssh/sshd_config
-
-# Set up x11 server
-# TODO: Fix the xkbcomp warnings
-RUN if [ "${ENABLE_X11}" = "1" ]; then \
-  apt-get update && apt-get install -y --no-install-recommends \
-  xvfb \
-  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*; \
-  fi
 
 # Install Docker using https://get.docker.com
 RUN wget -qO- https://get.docker.com | sh
@@ -133,4 +125,4 @@ ENTRYPOINT [ "/usr/local/bin/start-vscode.sh" ]
 
 HEALTHCHECK --interval=15s --timeout=5s --start-period=15m --retries=30 CMD [ "/usr/local/bin/healthcheck-vscode.sh" ]
 
-EXPOSE 8000 22
+EXPOSE 8000 22 5900

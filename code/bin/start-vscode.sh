@@ -1,11 +1,6 @@
 #!/bin/bash
 set -o pipefail -o nounset
 
-# Check if Xvfb is installed, if it is, start it
-if command -v Xvfb &>/dev/null; then
-	Xvfb ${DISPLAY} -screen 0 1920x1080x24 &
-fi
-
 # Make sure all the variables are set
 REPO_URL=${REPO_URL-}
 REPO_FOLDER=${REPO_FOLDER-}
@@ -18,8 +13,13 @@ EXTENSION_LIST=${EXTENSION_LIST-}
 EXTENSION_LIST_URL=${EXTENSION_LIST_URL-}
 SENDMAIL_HOST=${SENDMAIL_HOST:-localhost}
 SENDMAIL_PORT=${SENDMAIL_PORT:-25}
+ENABLE_VNC=${ENABLE_VNC-}
 HOSTNAME=$(hostname)
 USERNAME=$(whoami)
+
+if [[ -n ${ENABLE_VNC-} ]]; then
+	/usr/local/bin/start-vnc.sh
+fi
 
 # Make sure permissions for all mounted directories are correct
 sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
