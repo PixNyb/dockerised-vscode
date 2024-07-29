@@ -22,7 +22,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   unzip zip vim \
   locales \
   msmtp-mta \
-  xvfb \
   openbox \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
@@ -95,7 +94,8 @@ RUN mkdir -p /home/${USERNAME}/.vscode${CODE_INSIDERS:+-insiders} /home/${USERNA
   && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode${CODE_INSIDERS:+-insiders} /home/${USERNAME}/.vscode-server${CODE_INSIDERS:+-insiders}
 
 # Setup a /etc/home directory for the user
-RUN mkdir -p /etc/home
+RUN sudo mkdir -p /etc/home \
+  && sudo chown -R ${USERNAME}:${USERNAME} /etc/home
 
 # Setup a /home/${USERNAME}/.local/bin directory for the user
 RUN -u ${USERNAME} mkdir -p /home/${USERNAME}/.local/bin \
