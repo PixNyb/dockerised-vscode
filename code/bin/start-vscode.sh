@@ -21,10 +21,6 @@ if [[ -n ${ENABLE_VNC-} ]]; then
 	/usr/local/bin/start-vnc.sh
 fi
 
-# Make sure permissions for all mounted directories are correct
-sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
-sudo chown -R ${USERNAME}:${USERNAME} /etc/home
-
 # Replace all invalid characters with _
 EMAIL=$(echo "$HOSTNAME" | tr -cd '[:alnum:]_.-' | tr '[:upper:]' '[:lower:]')@roelc.dev
 

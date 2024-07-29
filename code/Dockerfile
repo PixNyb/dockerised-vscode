@@ -72,15 +72,15 @@ RUN useradd -m -s /bin/bash ${USERNAME} && \
   usermod -aG docker ${USERNAME}
 
 # Install Visual Studio Code
-RUN sudo apt-get install wget gpg -y && \
+RUN apt-get install wget gpg -y && \
   wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && \
-  sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && \
-  echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" |sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null && \
+  install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && \
+  echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list && \
   rm -f packages.microsoft.gpg && \
-  sudo apt install apt-transport-https -y && \
-  sudo apt update && \
-  sudo apt install code${CODE_INSIDERS:+-insiders} -y && \
-  sudo apt autoremove -y && sudo apt clean -y && sudo rm -rf /var/lib/apt/lists/*
+  apt install apt-transport-https -y && \
+  apt update && \
+  apt install code${CODE_INSIDERS:+-insiders} -y && \
+  apt autoremove -y && apt clean -y && rm -rf /var/lib/apt/lists/*
 
 # If CODE_INSIDERS is set, link the code-insiders binary to code
 RUN if [ -n "${CODE_INSIDERS}" ]; then ln -s /usr/bin/code-insiders /usr/bin/code; echo "Installed Visual Studio Code Insiders"; fi
@@ -94,12 +94,11 @@ RUN mkdir -p /home/${USERNAME}/.vscode${CODE_INSIDERS:+-insiders} /home/${USERNA
   && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode${CODE_INSIDERS:+-insiders} /home/${USERNAME}/.vscode-server${CODE_INSIDERS:+-insiders}
 
 # Setup a /etc/home directory for the user
-RUN sudo mkdir -p /etc/home \
-  && sudo chown -R ${USERNAME}:${USERNAME} /etc/home
+RUN mkdir -p /etc/home
 
 # Setup a /home/${USERNAME}/.local/bin directory for the user
-RUN -u ${USERNAME} mkdir -p /home/${USERNAME}/.local/bin \
-  && -u ${USERNAME} chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.local/bin
+RUN mkdir -p /home/${USERNAME}/.local/bin \
+  && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 # Setup tightvnc
 RUN wget -q -O- https://packagecloud.io/dcommander/turbovnc/gpgkey | \
