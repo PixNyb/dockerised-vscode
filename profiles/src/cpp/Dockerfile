@@ -13,7 +13,9 @@ RUN apt-get update && apt-get install -y \
     libtool \
     autoconf \
     automake \
+    lcov valgrind \
     libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev libgl1-mesa-dev \
+    libxft-dev libxext-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY bin/cpp/* /usr/local/bin

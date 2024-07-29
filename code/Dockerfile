@@ -22,7 +22,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   unzip zip vim \
   locales \
   msmtp-mta \
-  xvfb x11vnc \
+  xvfb \
+  openbox \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 ENV MAILER_DSN="sendmail://default?command=/usr/sbin/sendmail%20-t"
@@ -94,12 +95,22 @@ RUN mkdir -p /home/${USERNAME}/.vscode${CODE_INSIDERS:+-insiders} /home/${USERNA
   && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode${CODE_INSIDERS:+-insiders} /home/${USERNAME}/.vscode-server${CODE_INSIDERS:+-insiders}
 
 # Setup a /etc/home directory for the user
-RUN sudo mkdir -p /etc/home \
-  && sudo chown -R ${USERNAME}:${USERNAME} /etc/home
+RUN mkdir -p /etc/home
 
 # Setup a /home/${USERNAME}/.local/bin directory for the user
-RUN sudo -u ${USERNAME} mkdir -p /home/${USERNAME}/.local/bin \
-  && sudo -u ${USERNAME} chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.local/bin
+RUN -u ${USERNAME} mkdir -p /home/${USERNAME}/.local/bin \
+  && -u ${USERNAME} chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.local/bin
+
+# Setup tightvnc
+RUN wget -q -O- https://packagecloud.io/dcommander/turbovnc/gpgkey | \
+  gpg --dearmor >/etc/apt/trusted.gpg.d/TurboVNC.gpg
+
+RUN wget -q -O /etc/apt/sources.list.d/turbovnc.list \
+  https://raw.githubusercontent.com/TurboVNC/repo/main/TurboVNC.list
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  turbovnc \
+  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 USER ${USERNAME}
 ENV USER=${USERNAME}
