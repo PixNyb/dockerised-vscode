@@ -7,18 +7,23 @@ RUN apt-get update && apt-get install -y \
     cmake \
     gcc \
     clang \
+    clang-format \
     gdb \
+    pkg-config \
+    libtool \
+    autoconf \
+    automake \
+    libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev libgl1-mesa-dev \
     && rm -rf /var/lib/apt/lists/*
-
-RUN git clone https://github.com/microsoft/vcpkg.git /opt/vcpkg \
-    && /opt/vcpkg/bootstrap-vcpkg.sh
-
-ENV VCPKG_ROOT=/opt/vcpkg
-ENV PATH=$PATH:/opt/vcpkg
 
 COPY bin/cpp/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
 
 USER vscode
 
-EXPOSE 80
+ENV VCPKG_ROOT=/home/vscode/.vcpkg-repo
+ENV PATH=$PATH:$VCPKG_ROOT
+ENV CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
+
+RUN git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT \
+    && $VCPKG_ROOT/bootstrap-vcpkg.sh
