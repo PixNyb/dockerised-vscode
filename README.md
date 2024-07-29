@@ -61,6 +61,7 @@ The repository also builds development containers with additional software and e
 | Web       | [`php-<version>-node`](profiles/src/php/)  | Includes PHP, Composer, and NVM. (Available versions: `7.2`, `7.3`, `7.4`, `8.0`, `8.1`, `8.2`, `8.3`) |
 | Web       | [`dotnet-<version>`](profiles/src/dotnet/) | Includes .NET SDK and runtime. (Available versions: `8.0`)                                             |
 | Native    | [`java-<version>`](profiles/src/java/)     | Includes OpenJDK, Gradle, Maven and Ant. (Available versions: `8`, `11`, `17`, `21`)                   |
+| Native    | [`c++`](profiles/src/cpp/)                 | Includes CMake, GCC, Clang, and GDB.                                                                   |
 
 
 > [!NOTE]
