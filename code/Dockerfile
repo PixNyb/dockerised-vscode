@@ -100,7 +100,7 @@ RUN mkdir -p /etc/home
 RUN mkdir -p /home/${USERNAME}/.local/bin \
   && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
-# Setup tightvnc
+# Setup turbovnc
 RUN wget -q -O- https://packagecloud.io/dcommander/turbovnc/gpgkey | \
   gpg --dearmor >/etc/apt/trusted.gpg.d/TurboVNC.gpg
 

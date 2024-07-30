@@ -18,4 +18,6 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | b
     && nvm use node \
     && npm install -g yarn
 
+ENV PATH="./node_modules/.bin:${PATH}"
+
 EXPOSE 80

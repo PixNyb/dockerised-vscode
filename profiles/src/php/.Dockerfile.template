@@ -63,4 +63,6 @@ ENV WITH_NODE=false
 
 USER vscode
 
+ENV PATH="./vendor/bin:$PATH"
+
 EXPOSE 80
