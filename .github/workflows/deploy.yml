@@ -74,8 +74,6 @@ jobs:
           push: true
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
-          cache-from: type=gha,scope=code
-          cache-to: type=gha,mode=max,scope=code
 
   code-insiders:
     runs-on: ubuntu-latest
@@ -104,8 +102,6 @@ jobs:
             CODE_INSIDERS=true
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:insiders-${{ needs.setup.outputs.tag_name }}
-          cache-from: type=gha,scope=code-insiders
-          cache-to: type=gha,mode=max,scope=code-insiders
 
   profiles:
     runs-on: ubuntu-latest
