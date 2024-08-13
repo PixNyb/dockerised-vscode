@@ -137,4 +137,4 @@ echo "echo -e '    - \033[1;90mUsage\033[0m: import-db <sql_file>'" >>~/.bashrc
 echo "echo -e '  - \033[1;34mexport-db\033[0m: Export the database into a dump file'" >>~/.bashrc
 echo "echo -e '    - \033[1;90mUsage\033[0m: export-db <dump_file>'" >>~/.bashrc
 echo "echo -e '  - \033[1;34mclear-db\033[0m: Remove all tables from the database'" >>~/.bashrc
-echo "echo -e '    - \033[1;90mUsage\033[0m: clear-db <dump_file>'" >>~/.bashrc
+echo "echo -e '    - \033[1;90mUsage\033[0m: clear-db'" >>~/.bashrc
