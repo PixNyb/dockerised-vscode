@@ -42,9 +42,12 @@ RUN mkdir -p -m 755 /etc/apt/keyrings \
   && chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
 
+# Add WakeMeOps repository
+RUN curl -sSL "https://raw.githubusercontent.com/upciti/wakemeops/main/assets/install_repository" | sudo bash
+
 # Install other dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  gh \
+  gh glab \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Set up ssh by disabling root login and enabling key-based authentication

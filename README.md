@@ -1,6 +1,6 @@
 # Dockerised Visual Studio Code
 
-This is a Dockerised version of Visual Studio Code. It includes basic requirements for running Visual Studio Code (and GitHub CLI) on a remote server and can be expanded to include additional tools and extensions specific to your needs.
+This is a Dockerised version of Visual Studio Code. It includes basic requirements for running Visual Studio Code (and various CLI tools) on a remote server and can be expanded to include additional tools and extensions specific to your needs.
 
 ## Usage
 
@@ -71,7 +71,8 @@ The repository also builds development containers with additional software and e
 
 When running the container, you can pass the following environment variables to customise the container:
 
-- `GH_TOKEN`: The GitHub personal access token to use for authentication in the GitHub CLI and in turn git. (Optional)
+- `GH_TOKEN`: The GitHub personal access token to use for authentication in the GitHub CLI. (Optional)
+- `GITLAB_TOKEN`: The GitLab personal access token to use for authentication in the GitLab CLI. (Optional)
 - `GPG_SECRET_KEY`: The GPG secret key to use for signing commits. (Optional, base64)
 - `GPG_PASSPHRASE`: The passphrase for the GPG secret key. (Optional)
 - `REPO_URL`: The URL of the Git repository to clone when the container starts. (Optional)
@@ -91,6 +92,9 @@ When running the container, you can pass the following environment variables to 
 > ```
 >
 > If the GPG key doesn't exist in your GitHub account, and the GitHub CLI is authenticated with a personal access token, the GPG key will be uploaded to GitHub automatically.
+
+> [!NOTE]
+> Additional environment variables to configure GitLab CLI can be found [here](https://gitlab.com/gitlab-org/cli#environment-variables).
 
 > [!NOTE]
 > The `INIT_SCRIPT_URL` environment variable can be used to run a shell script when the container starts. This can be used to install additional tools and extensions specific to your needs. Keep in mind the `/usr/local/bin/initialise-vscode.sh` script is run after the `INIT_SCRIPT_URL` script. This allows you to start with a base setup and then customise it further according to your needs.

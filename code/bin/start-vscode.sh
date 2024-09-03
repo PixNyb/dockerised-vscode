@@ -8,6 +8,7 @@ GPG_SECRET_KEY=${GPG_SECRET_KEY-}
 GPG_PASSPHRASE=${GPG_PASSPHRASE-}
 GITHUB_TOKEN=${GITHUB_TOKEN-}
 GH_TOKEN=${GH_TOKEN:-$GITHUB_TOKEN}
+GITLAB_TOKEN=${GITLAB_TOKEN-}
 INIT_SCRIPT_URL=${INIT_SCRIPT_URL-}
 EXTENSION_LIST=${EXTENSION_LIST-}
 EXTENSION_LIST_URL=${EXTENSION_LIST_URL-}
@@ -71,6 +72,10 @@ done
 # If the GITHUB_TOKEN or GH_TOKEN environment variables are set, run `gh auth setup-git` in order to allow for gh to authenticate git
 if [[ -n ${GITHUB_TOKEN-} || -n ${GH_TOKEN-} ]]; then
 	gh auth setup-git
+fi
+
+if [[ -n ${GITLAB_TOKEN-} ]]; then
+	glab auth git-credential
 fi
 
 # Import the GPG key from the GPG_SECRET_KEY environment variable. If the GPG_PASSPHRASE environment variable is set, use it to unlock the GPG key.
