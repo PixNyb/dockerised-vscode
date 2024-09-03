@@ -23,7 +23,7 @@ if [[ -S /var/run/docker.sock && -n ${ENABLE_DOCKER-} ]]; then
 	docker_gid=$(stat -c '%g' /var/run/docker.sock)
 	docker_group=$(getent group "$docker_gid" | cut -d: -f1)
 	sudo usermod -aG "$docker_group" "$USERNAME"
-	newgrp "$docker_group"
+	exec sg "$docker_group" newgrp "$docker_group"
 fi
 
 if [[ -n ${ENABLE_VNC-} ]]; then
