@@ -20,7 +20,6 @@ HOSTNAME=$(hostname)
 USERNAME=$(whoami)
 
 if [[ -S /var/run/docker.sock && -n ${ENABLE_DOCKER-} ]]; then
-	local docker_gid
 	docker_gid=$(stat -c '%g' /var/run/docker.sock)
 	docker_group=$(getent group "$docker_gid" | cut -d: -f1)
 	sudo usermod -aG "$docker_group" "$USERNAME"
