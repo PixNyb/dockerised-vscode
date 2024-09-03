@@ -75,7 +75,7 @@ if [[ -n ${GITHUB_TOKEN-} || -n ${GH_TOKEN-} ]]; then
 fi
 
 if [[ -n ${GITLAB_TOKEN-} ]]; then
-	glab auth git-credential
+	git config --global credential.helper '!/usr/bin/glab auth git-credential'
 fi
 
 # Import the GPG key from the GPG_SECRET_KEY environment variable. If the GPG_PASSPHRASE environment variable is set, use it to unlock the GPG key.
