@@ -15,8 +15,17 @@ EXTENSION_LIST_URL=${EXTENSION_LIST_URL-}
 SENDMAIL_HOST=${SENDMAIL_HOST:-localhost}
 SENDMAIL_PORT=${SENDMAIL_PORT:-25}
 ENABLE_VNC=${ENABLE_VNC-}
+ENABLE_DOCKER=${ENABLE_DOCKER:-true}
 HOSTNAME=$(hostname)
 USERNAME=$(whoami)
+
+if [[ -S /var/run/docker.sock && -n ${ENABLE_DOCKER-} ]]; then
+	local docker_gid
+	docker_gid=$(stat -c '%g' /var/run/docker.sock)
+	docker_group=$(getent group "$docker_gid" | cut -d: -f1)
+	sudo usermod -aG "$docker_group" "$USERNAME"
+	newgrp "$docker_group"
+fi
 
 if [[ -n ${ENABLE_VNC-} ]]; then
 	/usr/local/bin/start-vnc.sh
