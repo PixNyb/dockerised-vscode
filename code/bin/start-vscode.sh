@@ -153,10 +153,6 @@ EOF
     fi
 fi
 
-cd "${curdir}" || exit
-    fi
-fi
-
 source /usr/local/bin/load-extensions.sh
 /usr/local/bin/initialise-vscode.sh
 
