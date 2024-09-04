@@ -82,7 +82,6 @@ When running the container, you can pass the following environment variables to 
 - `EXTENSION_LIST`: A list of Visual Studio Code extensions to install separated by commas. (Optional, e.g `ms-python.python,ms-vscode.cpptools`)
 - `EXTENSION_LIST_URL`: The URL of a file containing a list of Visual Studio Code extensions to install separated by newlines. (Optional, e.g. `https://example.com/extensions.txt`)
 - `ENABLE_VNC`: Whether to enable VNC server. (Optional, `true` or `false`)
-- `ENABLE_DOCKER`: Whether to enable Docker in Docker. (Optional, `true` or `false`)
 
 > [!NOTE]
 > In order to insert a GPG secret key, you need to base64 encode the contents of the GPG secret key file and pass it as the `GPG_SECRET_KEY` environment variable.
@@ -105,9 +104,6 @@ When running the container, you can pass the following environment variables to 
 
 > [!NOTE]
 > The `ENABLE_VNC` environment variable can be used to enable a VNC server in the container. It forwards the X11 display to a VNC server running on port 5900. You can connect to the VNC server using a VNC client (e.g. RealVNC Viewer) with no password.
-
-> [!NOTE]
-> The `ENABLE_DOCKER` environment variable can be used to enable Docker in Docker in the container. It mounts the host's Docker socket to the container and adds the user to the group that owns the Docker socket. Keep in mind that this can be a security risk and should only be used in trusted environments. Especially since the group mapping might be different and lead to the user being added to unintended groups.
 
 ##### Git Configuration
 
