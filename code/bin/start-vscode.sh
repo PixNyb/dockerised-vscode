@@ -19,13 +19,6 @@ ENABLE_DOCKER=${ENABLE_DOCKER:-true}
 HOSTNAME=$(hostname)
 USERNAME=$(whoami)
 
-if [[ -S /var/run/docker.sock && -n ${ENABLE_DOCKER-} ]]; then
-	docker_gid=$(stat -c '%g' /var/run/docker.sock)
-	docker_group=$(getent group "$docker_gid" | cut -d: -f1)
-	sudo usermod -aG "$docker_group" "$USERNAME"
-	newgrp "$docker_group"
-fi
-
 if [[ -n ${ENABLE_VNC-} ]]; then
 	/usr/local/bin/start-vnc.sh
 fi
@@ -153,12 +146,24 @@ if [ -n "${INIT_SCRIPT_URL-}" ]; then
 	curl -sSL "${INIT_SCRIPT_URL}" | bash;
 fi
 
-VSCODE_CLI_USE_FILE_KEYRING=1 VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT=1 \
-	code serve-web \
-    	--disable-telemetry \
-    	--without-connection-token \
-    	--accept-server-license-terms \
-    	--host 0.0.0.0 &
+if [[ -S /var/run/docker.sock && -n ${ENABLE_DOCKER-} ]]; then
+	docker_gid=$(stat -c '%g' /var/run/docker.sock)
+	docker_group=$(getent group "$docker_gid" | cut -d: -f1)
+	sudo usermod -aG "$docker_group" "$USERNAME"
+	VSCODE_CLI_USE_FILE_KEYRING=1 VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT=1 \
+		sg "$docker_group" -c 'code serve-web \
+			--disable-telemetry \
+			--without-connection-token \
+			--accept-server-license-terms \
+			--host 0.0.0.0 &'
+else
+	VSCODE_CLI_USE_FILE_KEYRING=1 VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT=1 \
+		code serve-web \
+			--disable-telemetry \
+			--without-connection-token \
+			--accept-server-license-terms \
+			--host 0.0.0.0 &
+fi
 
 VS_CODE_PID=$!
 
