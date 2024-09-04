@@ -138,6 +138,25 @@ if [[ -n ${REPO_URL-} ]]; then
     fi
 fi
 
+# Check if the Docker socket exists
+if [ -S /var/run/docker.sock ]; then
+    # Get the group of the Docker socket
+    DOCKER_GROUP=$(stat -c '%G' /var/run/docker.sock)
+
+    # Add the current user to the Docker group for the current session
+    if ! groups "$(whoami)" | grep -q "\b${DOCKER_GROUP}\b"; then
+        sudo usermod -aG "$DOCKER_GROUP" "$(whoami)"
+        newgrp "$DOCKER_GROUP" <<EOF
+        $(cat "$0")
+EOF
+        exit
+    fi
+fi
+
+cd "${curdir}" || exit
+    fi
+fi
+
 source /usr/local/bin/load-extensions.sh
 /usr/local/bin/initialise-vscode.sh
 
