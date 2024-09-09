@@ -14,6 +14,10 @@ RUN curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-li
 
 RUN curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
+RUN sudo apt update && sudo apt install -y golang-go
+
+RUN go install sigs.k8s.io/kind@v0.24.0
+
 COPY bin/cloud/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
 
