@@ -25,7 +25,7 @@ RUN mkdir -p /go/bin && \
 RUN apt update && apt install -y golang-go && \
     go install sigs.k8s.io/kind@v0.24.0
 
-COPY bin/cloud/* /usr/local/bin d
+COPY bin/cloud/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
 
 USER vscode
