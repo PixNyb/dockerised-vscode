@@ -25,27 +25,7 @@ RUN mkdir -p /go/bin && \
 RUN apt update && apt install -y golang-go && \
     go install sigs.k8s.io/kind@v0.24.0
 
-RUN apt-get update && \
-    apt-get install -y \
-        ca-certificates \
-        curl \
-        gnupg \
-        lsb-release && \
-    mkdir -p /etc/apt/keyrings && \
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | tee /etc/apt/keyrings/docker.gpg > /dev/null && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-    apt-get update && \
-    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-ENV DOCKER_TLS_CERTDIR=/certs
-RUN mkdir -p /certs /certs/client && \
-    chmod 1777 /certs /certs/client
-
-RUN curl -fsSL https://get.docker.com -o get-docker.sh && \
-    sh get-docker.sh && \
-    rm get-docker.sh
-
-COPY bin/cloud/* /usr/local/bin
+COPY bin/cloud/* /usr/local/bin d
 RUN chmod +x /usr/local/bin/*
 
 USER vscode
