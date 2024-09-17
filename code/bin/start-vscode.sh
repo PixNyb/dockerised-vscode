@@ -30,6 +30,7 @@ EXTENSION_LIST_URL=${EXTENSION_LIST_URL-}
 SENDMAIL_HOST=${SENDMAIL_HOST:-localhost}
 SENDMAIL_PORT=${SENDMAIL_PORT:-25}
 ENABLE_VNC=${ENABLE_VNC-}
+GIT_SCRIPT_FILE=${GIT_SCRIPT_FILE-}
 HOSTNAME=$(hostname)
 USERNAME=$(whoami)
 
@@ -147,6 +148,10 @@ if [[ -n ${REPO_URL-} ]]; then
         else
             git checkout -b "${REPO_BRANCH}"
         fi
+
+		if [[ -n ${GIT_SCRIPT_FILE-} ]]; then
+			source "./${GIT_SCRIPT_FILE}"
+		fi
 
         export PROJECT_BRANCH="${REPO_BRANCH}"
         cd "${curdir}" || exit
