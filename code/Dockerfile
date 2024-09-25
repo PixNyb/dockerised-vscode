@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   locales \
   msmtp-mta \
   openbox \
+  less \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 ENV MAILER_DSN="sendmail://default?command=/usr/sbin/sendmail%20-t"
