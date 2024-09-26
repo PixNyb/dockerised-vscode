@@ -102,7 +102,7 @@ When running the container, you can pass the following environment variables to 
 > The `INIT_SCRIPT_URL` environment variable can be used to run a shell script when the container starts. This can be used to install additional tools and extensions specific to your needs. Keep in mind the `/usr/local/bin/initialise-vscode.sh` script is run after the `INIT_SCRIPT_URL` script. This allows you to start with a base setup and then customise it further according to your needs.
 
 > [!NOTE]
-> The `GIT_SCRIPT_FILE` environment variable can be used to run a shell script after cloning a git repository. This can be used to install additional tools and extensions specific to your needs, or run environment setup scripts. The script will be run in and is relative to the repository folder.
+> The `REPO_SCRIPT_FILE` environment variable can be used to run a shell script after cloning a git repository. This can be used to install additional tools and extensions specific to your needs, or run environment setup scripts. The script will be run in and is relative to the repository folder.
 
 > [!NOTE]
 > The `EXTENSION_LIST_URL` environment variable can be used to install a list of Visual Studio Code extensions from a file. It can also be, itself, a list of URLs separated by commas. The file should contain a list of Visual Studio Code extensions separated by newlines.

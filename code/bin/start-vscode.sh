@@ -149,8 +149,8 @@ if [[ -n ${REPO_URL-} ]]; then
             git checkout -b "${REPO_BRANCH}"
         fi
 
-		if [[ -n ${GIT_SCRIPT_FILE-} ]]; then
-			source "./${GIT_SCRIPT_FILE}"
+		if [[ -n ${REPO_SCRIPT_FILE-} ]]; then
+			source "./${REPO_SCRIPT_FILE}"
 		fi
 
         export PROJECT_BRANCH="${REPO_BRANCH}"
