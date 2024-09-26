@@ -1,4 +1,4 @@
-FROM pixnyb/%image% AS base
+FROM pixnyb/%image% AS base
 
 USER root
 
