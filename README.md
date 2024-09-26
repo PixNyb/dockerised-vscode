@@ -80,7 +80,7 @@ When running the container, you can pass the following environment variables to 
 - `REPO_FOLDER`: The folder to clone the Git repository into. (e.g. ~/projects) (Optional)
 - `REPO_BRANCH`: The branch of the Git repository to clone. (Optional)
 - `INIT_SCRIPT_URL`: The URL of a shell script to run when the container starts. (Optional)
-- `GIT_SCRIPT_FILE`: The path to the script that should be run after cloning a git repo. (Optional)
+- `REPO_SCRIPT_FILE`: The path to the script that should be run after cloning a git repo. (Optional)
 - `EXTENSION_LIST`: A list of Visual Studio Code extensions to install separated by commas. (Optional, e.g `ms-python.python,ms-vscode.cpptools`)
 - `EXTENSION_LIST_URL`: The URL of a file containing a list of Visual Studio Code extensions to install separated by newlines. (Optional, e.g. `https://example.com/extensions.txt`)
 - `ENABLE_VNC`: Whether to enable VNC server. (Optional, `true` or `false`)
