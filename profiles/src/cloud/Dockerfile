@@ -14,16 +14,18 @@ RUN curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-li
 
 RUN curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
-ENV GOPATH=/go
-ENV PATH=$PATH:/go/bin
+ENV GOPATH=/home/vscode/.local/go
+ENV PATH=$PATH:/home/vscode/.local/go/bin
 
-RUN mkdir -p /go/bin && \
-    mkdir -p /go/src && \
-    mkdir -p /go/pkg && \
-    chmod -R 777 /go
+RUN mkdir -p /home/vscode/.local/go/bin && \
+    mkdir -p /home/vscode/.local/go/src && \
+    mkdir -p /home/vscode/.local/go/pkg
 
 RUN apt update && apt install -y golang-go && \
     go install sigs.k8s.io/kind@v0.24.0
+
+RUN chmod -R 775 /home/vscode/.local/go && \
+    chown -R vscode:vscode /home/vscode/.local/go
 
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
