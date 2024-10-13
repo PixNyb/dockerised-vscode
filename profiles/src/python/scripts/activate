@@ -1,0 +1,11 @@
+#!/bin/bash
+
+VENV_DIR=${$1:-$PROJECT_FOLDER/.venv}
+
+if [[ -d $VENV_DIR ]]; then
+    source $VENV_DIR/bin/activate
+    echo "Virtual environment activated: $VENV_DIR"
+else
+    echo "Virtual environment does not exist: $VENV_DIR"
+    exit 1
+fi

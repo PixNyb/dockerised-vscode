@@ -62,6 +62,7 @@ The repository also builds development containers with additional software and e
 | Web       | [`dotnet-<version>`](profiles/src/dotnet/) | Includes .NET SDK and runtime. (Available versions: `8.0`)                                             |
 | Native    | [`java-<version>`](profiles/src/java/)     | Includes OpenJDK, Gradle, Maven and Ant. (Available versions: `8`, `11`, `17`, `21`)                   |
 | Native    | [`cpp`](profiles/src/cpp/)                 | Includes CMake, GCC, Clang, GDB and Valgrind.                                                          |
+| Native    | [`python-<version>`](profiles/src/python/) | Includes Python, Pip and venv. (Available versions: `3`)                                               |
 | Cloud     | [`cloud`](profiles/src/cloud/)             | Includes Kubectl, Helm, Minicube and k3d.                                                              |
 
 

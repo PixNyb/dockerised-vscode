@@ -1,0 +1,24 @@
+FROM pixnyb/%image% AS base
+
+USER root
+
+RUN apt update && apt install -y \
+    python%python-version% \
+    python%python-version%-dev \
+    python%python-version%-venv \
+    python%python-version%-pip \
+    autoconf \
+    automake \
+    build-essential \
+    libtool
+
+COPY bin/python/* /usr/local/bin
+RUN chmod +x /usr/local/bin/*
+
+# COPY templates/python/* /etc/templates
+
+ENV PYTHON_VERSION=%python-version%
+
+USER vscode
+
+EXPOSE 80
