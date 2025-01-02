@@ -2,12 +2,7 @@ FROM pixnyb/%image% AS base
 
 USER root
 
-RUN source /etc/os-release \
-    && wget https://packages.microsoft.com/config/$ID/$VERSION_ID/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
-    && dpkg -i packages-microsoft-prod.deb \
-    && rm packages-microsoft-prod.deb \
-    && apt update -y && apt upgrade -y \
-    && apt install -y dotnet-sdk-%dotnet-version%
+ENV PATH=$PATH:/home/vscode/.dotnet:/home/vscode/.dotnet/tools
 
 COPY bin/dotnet/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
@@ -18,5 +13,11 @@ ENV DOTNET_VERSION=%dotnet-version%
 ENV WITH_NODE=false
 
 USER vscode
+
+RUN wget https://dot.net/v1/dotnet-install.sh -O dotnet-install \
+    && chmod +x ./dotnet-install \
+    && ./dotnet-install --channel %dotnet-version% \
+    && ls -l $HOME/.dotnet \
+    && dotnet --list-sdks
 
 EXPOSE 80
