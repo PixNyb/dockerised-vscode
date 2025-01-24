@@ -62,6 +62,15 @@ sudo chmod 777 /var/log/msmtp.log
 if [[ -d /etc/home ]]; then
 	cp -rf /etc/home/* ~ 2>/dev/null
 	cp -rf /etc/home/.[^.]* ~ 2>/dev/null
+
+	if [[ -d ~/.ssh ]]
+		chmod 700 ~/.ssh
+		chmod 600 ~/.ssh/*
+		chmod 644 ~/.ssh/*.pub
+		chmod 644 ~/.ssh/known_hosts
+		chmod 600 ~/.ssh/config
+		chmod 600 ~/.ssh/authorized_keys
+	fi
 fi
 
 # Start SSH
