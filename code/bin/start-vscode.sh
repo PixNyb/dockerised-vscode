@@ -63,7 +63,7 @@ if [[ -d /etc/home ]]; then
 	cp -rf /etc/home/* ~ 2>/dev/null
 	cp -rf /etc/home/.[^.]* ~ 2>/dev/null
 
-	if [[ -d ~/.ssh ]]
+	if [[ -d ~/.ssh ]]; then
 		chmod 700 ~/.ssh
 		chmod 600 ~/.ssh/*
 		chmod 644 ~/.ssh/*.pub
