@@ -25,27 +25,22 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
   openbox \
   rxvt-unicode qutebrowser \
   less mandoc \
-  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
+  && locale-gen en_US.UTF-8 \
+  && dpkg-reconfigure --frontend=noninteractive locales \
+  && update-locale LANG=en_US.UTF-8
 
 ENV MAILER_DSN="sendmail://default?command=/usr/sbin/sendmail%20-t"
-
-RUN locale-gen en_US.UTF-8
-
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
-RUN dpkg-reconfigure --frontend=noninteractive locales \
-  && update-locale LANG=en_US.UTF-8
-
-# Add the GitHub CLI GPG key
+# Add the GitHub CLI GPG key and WakeMeOps repository
 RUN mkdir -p -m 755 /etc/apt/keyrings \
   && wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
   && chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
-  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-
-# Add WakeMeOps repository
-RUN curl -sSL "https://raw.githubusercontent.com/upciti/wakemeops/main/assets/install_repository" | sudo bash
+  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+  && curl -sSL "https://raw.githubusercontent.com/upciti/wakemeops/main/assets/install_repository" | sudo bash
 
 # Install other dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -107,12 +102,10 @@ RUN mkdir -p /home/${USERNAME}/.local/bin \
 
 # Setup turbovnc
 RUN wget -q -O- https://packagecloud.io/dcommander/turbovnc/gpgkey | \
-  gpg --dearmor >/etc/apt/trusted.gpg.d/TurboVNC.gpg
-
-RUN wget -q -O /etc/apt/sources.list.d/turbovnc.list \
-  https://raw.githubusercontent.com/TurboVNC/repo/main/TurboVNC.list
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
+  gpg --dearmor >/etc/apt/trusted.gpg.d/TurboVNC.gpg \
+  && wget -q -O /etc/apt/sources.list.d/turbovnc.list \
+  https://raw.githubusercontent.com/TurboVNC/repo/main/TurboVNC.list \
+  && apt-get update && apt-get install -y --no-install-recommends \
   turbovnc \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
