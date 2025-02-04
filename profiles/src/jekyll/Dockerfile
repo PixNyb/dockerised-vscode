@@ -20,16 +20,16 @@ RUN apt-get update && apt-get install -y \
 
 COPY bin/jekyll/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
-    
+
 # COPY templates/jekyll/* /etc/templates
 
 ENV PATH="/home/vscode/.rbenv/bin:/home/vscode/.rbenv/shims:$PATH"
-    
+
 USER vscode
 
 RUN git clone https://github.com/rbenv/rbenv.git $HOME/.rbenv \
     && git clone https://github.com/rbenv/ruby-build.git $HOME/.rbenv/plugins/ruby-build \
-    && sudo $HOME/.rbenv/plugins/ruby-build/install.sh \
+    && $HOME/.rbenv/plugins/ruby-build/install.sh \
     && echo 'eval "$(rbenv init -)"' >> $HOME/.bashrc \
     && export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH" \
     && RUBY_VERSION=$(rbenv install -l | grep -v - | tail -1) \
