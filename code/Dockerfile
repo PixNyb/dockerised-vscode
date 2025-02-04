@@ -14,7 +14,7 @@ ENV DISPLAY=:0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install the necessary dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade && apt-get install -y --no-install-recommends \
   apt-utils software-properties-common sudo jq \
   libdrm2 libgbm1 libnspr4 libnss3 libxkbfile1 xdg-utils libvulkan1 \
   gnupg gnome-keyring wget curl python3-minimal ca-certificates \

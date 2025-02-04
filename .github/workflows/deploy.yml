@@ -74,6 +74,7 @@ jobs:
         with:
           context: code
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
 
