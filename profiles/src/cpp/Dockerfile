@@ -23,9 +23,7 @@ RUN chmod +x /usr/local/bin/*
 
 USER vscode
 
-ENV VCPKG_ROOT=/home/vscode/.vcpkg-repo
+RUN . <(curl https://aka.ms/vcpkg-init.sh -L)
+
 ENV PATH=$PATH:$VCPKG_ROOT
 ENV CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
-
-RUN git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT \
-    && $VCPKG_ROOT/bootstrap-vcpkg.sh
