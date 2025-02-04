@@ -102,6 +102,7 @@ jobs:
           push: true
           build-args: |
             CODE_INSIDERS=true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:insiders-${{ needs.setup.outputs.tag_name }}
 
@@ -139,6 +140,7 @@ jobs:
           context: profiles/dist/${{ matrix.release }}
           file: profiles/dist/${{ matrix.release }}/Dockerfile.${{ matrix.profile }}
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:${{ matrix.profile }}
           cache-from: type=gha,scope=${{ matrix.release }}-${{ matrix.profile }}
