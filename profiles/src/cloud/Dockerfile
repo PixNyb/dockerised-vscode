@@ -12,9 +12,9 @@ RUN curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/s
     sudo apt-get update && \
     sudo apt-get install helm -y
 
-RUN curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && \
-    install minikube-linux-amd64 /usr/local/bin/minikube && \
-    rm minikube-linux-amd64
+RUN curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-$(dpkg --print-architecture) && \
+    install minikube-linux-$(dpkg --print-architecture) /usr/local/bin/minikube && \
+    rm minikube-linux-$(dpkg --print-architecture)
 
 RUN curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
@@ -31,13 +31,17 @@ RUN apt update && apt install -y golang-go && \
 RUN chmod -R 775 /home/vscode/.local/go && \
     chown -R vscode:vscode /home/vscode/.local/go
 
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then ARCH="x86_64"; elif [ "$ARCH" = "arm64" ]; then ARCH="aarch64"; fi && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-$ARCH.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
     rm -rf ./aws
 
-RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz && \
-    tar -xf google-cloud-cli-linux-x86_64.tar.gz && \
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then ARCH="x86_64"; elif [ "$ARCH" = "arm64" ]; then ARCH="aarch64"; fi && \
+    curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-$ARCH.tar.gz && \
+    tar -xf google-cloud-cli-linux-$ARCH.tar.gz && \
     mv google-cloud-sdk /usr/local && \
     /usr/local/google-cloud-sdk/install.sh -q \
     --usage-reporting false \
