@@ -39,7 +39,7 @@ RUN ARCH=$(dpkg --print-architecture) && \
     rm -rf ./aws
 
 RUN ARCH=$(dpkg --print-architecture) && \
-    if [ "$ARCH" = "amd64" ]; then ARCH="x86_64"; elif [ "$ARCH" = "arm64" ]; then ARCH="aarch64"; fi && \
+    if [ "$ARCH" = "amd64" ]; then ARCH="x86_64"; elif [ "$ARCH" = "arm64" ]; then ARCH="arm"; fi && \
     curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-$ARCH.tar.gz && \
     tar -xf google-cloud-cli-linux-$ARCH.tar.gz && \
     mv google-cloud-sdk /usr/local && \
