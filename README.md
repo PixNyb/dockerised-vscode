@@ -42,10 +42,10 @@ The image is availlable on [Docker Hub](https://hub.docker.com/r/pixnyb/code).
 
 The following tags are available:
 
-| Tag        | Description                                       |
-| ---------- | ------------------------------------------------- |
-| `latest`   | The latest stable version of Visual Studio Code.  |
-| `insiders` | The latest insider version of Visual Studio Code. |
+| Tag        | Description                                                                         |
+| ---------- | ----------------------------------------------------------------------------------- |
+| `latest`   | The latest stable version of Visual Studio Code.                                    |
+| `insiders` | The latest insider version of Visual Studio Code. (Deprecated, will not be updated) |
 
 #### Profiles
 
