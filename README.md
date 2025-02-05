@@ -55,9 +55,8 @@ The repository also builds development containers with additional software and e
 | --------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
 | Basic     | [`html`](profiles/src/html/)               | A basic HTML environment, only includes additional extensions.                                         |
 | Basic     | [`jekyll`](profiles/src/jekyll/)           | A basic Jekyll environment.                                                                            |
-| Basic     | [`tex`](profiles/src/tex/)                 | A basic LaTeX environment.                                                                             |
 | Web       | [`node`](profiles/src/node/)               | Includes NVM and installs the latest version of node.                                                  |
-| Web       | [`php-<version>`](profiles/src/php/)       | Includes PHP and Composer. (Available versions: `7.2`, `7.3`, `7.4`, `8.0`, `8.1`, `8.2`, `8.3`)       |
+| Web       | [`php-<version>`](profiles/src/php/)       | Includes PHP and Composer. (Available versions: `8.1`, `8.2`, `8.3`)                                   |
 | Web       | [`php-<version>-node`](profiles/src/php/)  | Includes PHP, Composer, and NVM. (Available versions: `7.2`, `7.3`, `7.4`, `8.0`, `8.1`, `8.2`, `8.3`) |
 | Web       | [`dotnet-<version>`](profiles/src/dotnet/) | Includes .NET SDK and runtime. (Available versions: `8.0`, `9.0`)                                      |
 | Native    | [`java-<version>`](profiles/src/java/)     | Includes OpenJDK, Gradle, Maven and Ant. (Available versions: `8`, `11`, `17`, `21`)                   |
@@ -68,6 +67,8 @@ The repository also builds development containers with additional software and e
 
 > [!NOTE]
 > The pre-built development containers are based on the `latest` tag of the base image. If you want to use `insiders` instead, you can build the image yourself and use the `insiders` tag.
+>
+> Not all profiles may be built regularly. If you need a specific profile, you can build it yourself using the provided Dockerfile.
 
 #### Environment Variables
 

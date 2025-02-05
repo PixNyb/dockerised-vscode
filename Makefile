@@ -1,4 +1,14 @@
 MAKEFILES := $(shell find profiles/src -type f -name Makefile)
+EXCLUDED := \
+	profiles/src/tex/Dockerfile \
+	profiles/src/php/Dockerfile.7.2 \
+	profiles/src/php/Dockerfile.7.2-node \
+	profiles/src/php/Dockerfile.7.3 \
+	profiles/src/php/Dockerfile.7.3-node \
+	profiles/src/php/Dockerfile.7.4 \
+	profiles/src/php/Dockerfile.7.4-node \
+	profiles/src/php/Dockerfile.8.0 \
+	profiles/src/php/Dockerfile.8.0-node
 
 define DOCKERFILES =
 $(shell find profiles/src -type f -name Dockerfile*)
@@ -63,15 +73,25 @@ export-templates:
 generate-json:
 	@echo "[" > profiles/dist/manifest.json; \
 	for file in $(DOCKERFILES); do \
-		PROFILE_PATH=`dirname $$file` ; \
-		PROFILE_NAME=`basename $$PROFILE_PATH` ; \
-		PROFILE_VERSION=`basename $$file | sed 's/Dockerfile//g'` ; \
-		PROFILE_TAG=$$PROFILE_NAME ; \
-		if [ "$$PROFILE_VERSION" != "" ]; then \
-			PROFILE_VERSION=`echo $$PROFILE_VERSION | sed 's/\.//'` ; \
-			PROFILE_TAG=$$PROFILE_TAG-$$PROFILE_VERSION ; \
-		fi ; \
-		echo "\"$$PROFILE_TAG\"," >> profiles/dist/manifest.json; \
+		echo $$file; \
+		EXCLUDE=0; \
+		for exclude in $(EXCLUDED); do \
+			if [ "$$file" = "$$exclude" ]; then \
+				EXCLUDE=1; \
+				break; \
+			fi; \
+		done; \
+		if [ "$$EXCLUDE" -eq 0 ]; then \
+			PROFILE_PATH=`dirname $$file` ; \
+			PROFILE_NAME=`basename $$PROFILE_PATH` ; \
+			PROFILE_VERSION=`basename $$file | sed 's/Dockerfile//g'` ; \
+			PROFILE_TAG=$$PROFILE_NAME ; \
+			if [ "$$PROFILE_VERSION" != "" ]; then \
+				PROFILE_VERSION=`echo $$PROFILE_VERSION | sed 's/\.//'` ; \
+				PROFILE_TAG=$$PROFILE_TAG-$$PROFILE_VERSION ; \
+			fi ; \
+			echo "\"$$PROFILE_TAG\"," >> profiles/dist/manifest.json; \
+		fi; \
 	done; \
 	sed -i '$$ s/.$$//' profiles/dist/manifest.json; \
 	echo "]" >> profiles/dist/manifest.json
