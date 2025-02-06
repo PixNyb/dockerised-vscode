@@ -23,6 +23,8 @@ RUN chmod +x /usr/local/bin/*
 
 USER vscode
 
+ENV VCPKG_ROOT=/home/vscode/.vcpkg
+
 RUN . <(curl https://aka.ms/vcpkg-init.sh -L)
 
 ENV PATH=$PATH:$VCPKG_ROOT
