@@ -26,7 +26,7 @@ RUN mkdir -p /home/vscode/.local/go/bin && \
     mkdir -p /home/vscode/.local/go/pkg
 
 RUN apt update && apt install -y golang-go && \
-    go install sigs.k8s.io/kind@v0.24.0
+    go install sigs.k8s.io/kind
 
 RUN chmod -R 775 /home/vscode/.local/go && \
     chown -R vscode:vscode /home/vscode/.local/go

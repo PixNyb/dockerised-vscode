@@ -24,7 +24,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
   msmtp-mta \
   openbox \
   rxvt-unicode qutebrowser \
-  less mandoc \
+  less mandoc bash-completion \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
   && locale-gen en_US.UTF-8 \
   && dpkg-reconfigure --frontend=noninteractive locales \
