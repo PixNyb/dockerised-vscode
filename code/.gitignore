@@ -17,6 +17,7 @@ build/
 out/
 bin/
 obj/
+__debug*
 
 # Compiled files
 *.pyc
