@@ -159,7 +159,7 @@ clone_repo() {
 
 		if [[ -n ${REPO_BRANCH-} ]]; then
             curdir=$(pwd)
-            cd "${repo_folder}/${project_name}" || exit
+            cd "${repo_folder}/${project_name}"
 
 			if git ls-remote --exit-code --heads "${REPO_URL}" "${REPO_BRANCH}" &>/dev/null; then
                 git checkout "${REPO_BRANCH}"
@@ -181,16 +181,13 @@ clone_repo() {
             fi
 
 			export PROJECT_BRANCH="${REPO_BRANCH}"
-            cd "${curdir}" || exit
+            cd "${curdir}"
         fi
     fi
 }
 
 set_git_config() {
 	echo "- Setting global git config..."
-
-	curdir=$(pwd)
-	cd "${PROJECT_FOLDER}" || exit
 
     env | grep -o '^GIT_[^=]\+' | while read -r git_config; do
         git_config_value="${!git_config}"
@@ -201,15 +198,13 @@ set_git_config() {
             git config --"${git_config_name}" "${git_config_key}" "${git_config_value}"
         fi
     done
-
-	cd "${curdir}" || exit
 }
 
 set_local_git_config() {
     echo "- Setting local git config..."
 
     curdir=$(pwd)
-    cd "${PROJECT_FOLDER}" || exit
+    cd "${PROJECT_FOLDER}"
 
     env | grep -o '^GIT_LOCAL_[^=]\+' | while read -r git_config; do
         git_config_value="${!git_config}"
@@ -218,7 +213,7 @@ set_local_git_config() {
         git config --local "${git_config_key}" "${git_config_value}"
     done
 
-    cd "${curdir}" || exit
+    cd "${curdir}"
 }
 
 start_vscode() {
