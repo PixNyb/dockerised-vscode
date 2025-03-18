@@ -187,7 +187,7 @@ clone_repo() {
 }
 
 set_git_config() {
-	echo "- Setting git config..."
+	echo "- Setting global git config..."
 
 	curdir=$(pwd)
 	cd "${PROJECT_FOLDER}" || exit
@@ -197,10 +197,28 @@ set_git_config() {
         git_config_name=$(echo "${git_config}" | cut -d_ -f2 | tr '[:upper:]' '[:lower:]')
         git_config_key=$(echo "${git_config}" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr '_' '.')
 
-        git config --"${git_config_name}" "${git_config_key}" "${git_config_value}"
+        if [[ "${git_config_name}" != "local" ]]; then
+            git config --"${git_config_name}" "${git_config_key}" "${git_config_value}"
+        fi
     done
 
 	cd "${curdir}" || exit
+}
+
+set_local_git_config() {
+    echo "- Setting local git config..."
+
+    curdir=$(pwd)
+    cd "${PROJECT_FOLDER}" || exit
+
+    env | grep -o '^GIT_LOCAL_[^=]\+' | while read -r git_config; do
+        git_config_value="${!git_config}"
+        git_config_key=$(echo "${git_config}" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr '_' '.')
+
+        git config --local "${git_config_key}" "${git_config_value}"
+    done
+
+    cd "${curdir}" || exit
 }
 
 start_vscode() {
@@ -239,8 +257,9 @@ main() {
     setup_github_auth
     setup_gitlab_auth
     import_gpg_key
-    clone_repo
     set_git_config
+    clone_repo
+    set_local_git_config
 
     source /usr/local/bin/load-extensions.sh
     /usr/local/bin/initialise-vscode.sh
