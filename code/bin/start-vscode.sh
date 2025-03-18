@@ -5,7 +5,7 @@ set -o pipefail -o nounset
 check_docker_socket() {
 	echo "Checking docker socket..."
     if [ -S /var/run/docker.sock ]; then
-		echo "Docker socket found..."
+		echo "- Docker socket found..."
         DOCKER_GROUP=$(stat -c '%G' /var/run/docker.sock)
         if ! groups "$(whoami)" | grep -q "\b${DOCKER_GROUP}\b"; then
             sudo usermod -aG "$DOCKER_GROUP" "$(whoami)"
@@ -14,21 +14,21 @@ check_docker_socket() {
 EOF
             exit
 
-			echo "User added to docker group..."
+			echo "- User added to docker group..."
         fi
     fi
 }
 
 enable_vnc() {
-	echo "Checking VNC..."
+	echo "- Checking VNC..."
 	if [[ -n ${ENABLE_VNC-} ]]; then
-		echo "VNC enabled..."
 		/usr/local/bin/start-vnc.sh
+		echo "- VNC enabled..."
 	fi
 }
 
 configure_msmtp() {
-	echo "Configuring msmtp..."
+	echo "- Configuring msmtp..."
     EMAIL=$(echo "$(hostname)" | tr -cd '[:alnum:]_.-' | tr '[:upper:]' '[:lower:]')@mail.dev
     sudo tee /etc/msmtprc << EOF > /dev/null
 defaults
@@ -56,12 +56,12 @@ password       ${SENDMAIL_PASSWORD}
 EOF
 	fi
 
-	echo "Mail configured..."
+	echo "- Mail configured..."
 }
 
 copy_home_files() {
     if [[ -d /etc/home ]]; then
-		echo "Copying home files..."
+		echo "- Copying home files..."
         cp -rf /etc/home/* ~ 2>/dev/null
         cp -rf /etc/home/.[^.]* ~ 2>/dev/null
         if [[ -d ~/.ssh ]]; then
@@ -74,40 +74,40 @@ copy_home_files() {
             chmod 600 ~/.ssh/authorized_keys 2>/dev/null
         fi
 
-		echo "Home files copied..."
+		echo "- Home files copied..."
     fi
 }
 
 setup_github_auth() {
     if [[ -n ${GITHUB_TOKEN-} ]]; then
-		echo "Setting up github auth..."
+		echo "- Setting up github auth..."
         gh auth setup-git
     fi
 }
 
 setup_gitlab_auth() {
 	if [[ -n ${GITLAB_TOKEN-} ]]; then
-		echo "Setting up gitlab auth..."
+		echo "- Setting up gitlab auth..."
 		git config --global credential.'https://gitlab.com'.helper '!/usr/bin/glab auth git-credential'
     fi
 }
 
 import_gpg_key() {
     if [[ -n ${GPG_SECRET_KEY-} ]]; then
-		echo "Importing gpg key..."
-        echo "${GPG_SECRET_KEY}" | base64 -d | gpg --batch --import >/dev/null 2>&1
+		echo "- Importing gpg key..."
+        echo "${GPG_SECRET_KEY}" | base64 -d | gpg --batch --import
 
 		if [[ $? -ne 0 ]]; then
-			echo "Failed to import gpg key..."
+			echo "- Failed to import gpg key..."
 		fi
 
 		if [[ -n ${GPG_PASSPHRASE-} ]]; then
-            echo "${GPG_PASSPHRASE}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --output /dev/null --sign >/dev/null 2>&1
+            echo "${GPG_PASSPHRASE}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --output /dev/null --sign
 			if [[ $? -ne 0 ]]; then
-				echo "Failed to import gpg key..."
+				echo "- Failed to import gpg key..."
 			fi
 
-			echo "Gpg key imported..."
+			echo "- Gpg key imported..."
         fi
 
 		export GPG_TTY=$(tty)
@@ -126,9 +126,9 @@ import_gpg_key() {
                 gh gpg-key add "${key_file}" --title "GPG key for $(hostname)"
 
 				if [[ $? -ne 0 ]]; then
-					echo "Failed to add gpg key to github..."
+					echo "- Failed to add gpg key to github..."
 				else
-					echo "Gpg key added to github..."
+					echo "- Gpg key added to github..."
 				fi
             fi
         fi
@@ -136,22 +136,22 @@ import_gpg_key() {
         git config --global user.signingkey "${default_key_id}"
         git config --global commit.gpgsign true
 
-		echo "Gpg key configured and commit signing enabled..."
+		echo "- Gpg key configured and commit signing enabled..."
     fi
 }
 
 clone_repo() {
     if [[ -n ${REPO_URL-} ]]; then
-		echo "Cloning repo..."
+		echo "- Cloning repo..."
         repo_folder=${REPO_FOLDER:-~/}
         repo_folder=${repo_folder%/}
         project_name=$(basename "${REPO_URL}" .git)
 
         mkdir -p "${repo_folder}"
-        git clone "${REPO_URL}" "${repo_folder}/${project_name}" >/dev/null 2>&1
+        git clone "${REPO_URL}" "${repo_folder}/${project_name}"
 
 		if [[ $? -ne 0 ]]; then
-			echo "Failed to clone repo..."
+			echo "- Failed to clone repo..."
 		fi
 
 		export PROJECT_FOLDER="${repo_folder}/${project_name}"
@@ -167,17 +167,17 @@ clone_repo() {
                 git checkout -b "${REPO_BRANCH}"
             fi
 
-			echo "Repo cloned and checked out to branch ${REPO_BRANCH}..."
+			echo "- Repo cloned and checked out to branch ${REPO_BRANCH}..."
 
 			if [[ -n ${REPO_SCRIPT_FILE-} ]]; then
-				echo "Running post-clone script..."
+				echo "- Running post-clone script..."
 
 				if [[ "${REPO_SCRIPT_FILE}" != "${REPO_SCRIPT_FILE/#\//}" ]]; then
 					echo "Warning: The script file is outside of the repo. This may be a security risk."
 				fi
 
                 source "./${REPO_SCRIPT_FILE}"
-				echo "Post-clone script ran..."
+				echo "- Post-clone script ran..."
             fi
 
 			export PROJECT_BRANCH="${REPO_BRANCH}"
@@ -187,7 +187,7 @@ clone_repo() {
 }
 
 set_git_config() {
-	echo "Setting git config..."
+	echo "- Setting git config..."
 
 	curdir=$(pwd)
 	cd "${PROJECT_FOLDER}" || exit
@@ -197,8 +197,6 @@ set_git_config() {
         git_config_name=$(echo "${git_config}" | cut -d_ -f2 | tr '[:upper:]' '[:lower:]')
         git_config_key=$(echo "${git_config}" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr '_' '.')
 
-		echo "Setting git config: ${git_config_name} ${git_config_key} ${git_config_value}"
-
         git config --"${git_config_name}" "${git_config_key}" "${git_config_value}"
     done
 
@@ -206,7 +204,7 @@ set_git_config() {
 }
 
 start_vscode() {
-	echo "Starting vscode..."
+	echo "- Starting vscode..."
     VSCODE_CLI_USE_FILE_KEYRING=1 VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT=1 \
     code serve-web \
         --disable-telemetry \
@@ -216,7 +214,7 @@ start_vscode() {
 
     VS_CODE_PID=$!
 
-	echo "Vscode started on pid ${VS_CODE_PID}..."
+	echo "- Vscode started on pid ${VS_CODE_PID}..."
 
     while [ -z "$(ls /tmp/code-* 2>/dev/null)" ]; do
         curl http://localhost:8000 > /dev/null 2>&1
