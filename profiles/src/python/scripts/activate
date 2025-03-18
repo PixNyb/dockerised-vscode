@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 VENV_DIR=${1:-$PROJECT_FOLDER/.venv}
 

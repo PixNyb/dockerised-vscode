@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 EXTENSION_LIST=${EXTENSION_LIST-}
 EXTENSION_LIST_URL=${EXTENSION_LIST_URL-}
@@ -7,16 +7,12 @@ EXTENSION_LIST_URL=${EXTENSION_LIST_URL-}
 CODE_SERVER_PATH=$(ps -u $USER -o args | grep /bin/code-server | grep -v grep | awk '{print $2}')
 
 # Install extensions from the EXTENSION_LIST_URL environment variable. It can contain a list of urls separated by commas.
-if [[ -n ${EXTENSION_LIST_URL-} ]]; then
+if [[ -n ${EXTENSION_LIST_URL} ]]; then
 	IFS=',' read -r -a urls <<<"${EXTENSION_LIST_URL}"
 	for url in "${urls[@]}"; do
 		while IFS= read -r extension; do
 			# Append the extension to the list of extensions
-			if [[ -n ${EXTENSION_LIST-} ]]; then
-				EXTENSION_LIST="${EXTENSION_LIST},${extension}"
-			else
-				EXTENSION_LIST="${extension}"
-			fi
+			EXTENSION_LIST="${EXTENSION_LIST:+${EXTENSION_LIST},}${extension}"
 		done < <(curl -sSL "${url}" || echo "Failed to download ${url}")
 	done
 fi

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-extensions="christian-kohler.path-intellisense,formulahendry.auto-close-tag,formulahendry.auto-rename-tag,sissel.shopify-liquid"
+extensions="James-Yu.latex-workshop"
 if [ -z "$EXTENSION_LIST" ]; then
 	EXTENSION_LIST=$extensions
 else

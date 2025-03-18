@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Check if SQL file is provided
 if [[ $# -ne 1 ]]; then

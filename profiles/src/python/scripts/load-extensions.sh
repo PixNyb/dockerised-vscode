@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 extensions="ms-python.python,ms-python.debugpy,donjayamanne.python-environment-manager,kevinrose.vsc-python-indent,wholroyd.jinja,batisteo.vscode-django"
 if [ -z "$EXTENSION_LIST" ]; then
