@@ -78,19 +78,6 @@ copy_home_files() {
     fi
 }
 
-set_git_config() {
-	echo "Setting git config..."
-    env | grep -o '^GIT_[^=]\+' | while read -r git_config; do
-        git_config_value="${!git_config}"
-        git_config_name=$(echo "${git_config}" | cut -d_ -f2 | tr '[:upper:]' '[:lower:]')
-        git_config_key=$(echo "${git_config}" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr '_' '.')
-
-		echo "Setting git config: ${git_config_name} ${git_config_key} ${git_config_value}"
-
-        git config --"${git_config_name}" "${git_config_key}" "${git_config_value}"
-    done
-}
-
 setup_github_auth() {
     if [[ -n ${GITHUB_TOKEN-} ]]; then
 		echo "Setting up github auth..."
@@ -108,7 +95,11 @@ setup_gitlab_auth() {
 import_gpg_key() {
     if [[ -n ${GPG_SECRET_KEY-} ]]; then
 		echo "Importing gpg key..."
-        echo "${GPG_SECRET_KEY}" | base64 -d | gpg --batch --import
+        echo "${GPG_SECRET_KEY}" | base64 -d | gpg --batch --import >/dev/null 2>&1
+
+		if [[ $? -ne 0 ]]; then
+			echo "Failed to import gpg key..."
+		fi
 
 		if [[ -n ${GPG_PASSPHRASE-} ]]; then
             echo "${GPG_PASSPHRASE}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --output /dev/null --sign >/dev/null 2>&1
@@ -195,6 +186,25 @@ clone_repo() {
     fi
 }
 
+set_git_config() {
+	echo "Setting git config..."
+
+	curdir=$(pwd)
+	cd "${PROJECT_FOLDER}" || exit
+
+    env | grep -o '^GIT_[^=]\+' | while read -r git_config; do
+        git_config_value="${!git_config}"
+        git_config_name=$(echo "${git_config}" | cut -d_ -f2 | tr '[:upper:]' '[:lower:]')
+        git_config_key=$(echo "${git_config}" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr '_' '.')
+
+		echo "Setting git config: ${git_config_name} ${git_config_key} ${git_config_value}"
+
+        git config --"${git_config_name}" "${git_config_key}" "${git_config_value}"
+    done
+
+	cd "${curdir}" || exit
+}
+
 start_vscode() {
 	echo "Starting vscode..."
     VSCODE_CLI_USE_FILE_KEYRING=1 VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT=1 \
@@ -228,11 +238,11 @@ main() {
     configure_msmtp
     copy_home_files
     sudo service ssh start
-    set_git_config
     setup_github_auth
     setup_gitlab_auth
     import_gpg_key
     clone_repo
+    set_git_config
 
     source /usr/local/bin/load-extensions.sh
     /usr/local/bin/initialise-vscode.sh
