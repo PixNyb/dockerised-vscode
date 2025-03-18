@@ -1,6 +1,10 @@
 # Although generally not recommended, ubuntu's latest tag refers to the latest LTS release.
 FROM ubuntu:latest
 LABEL maintainer="Roël Couwenberg <contact@roelc.me>"
+LABEL org.opencontainers.image.title="Dockerised VSCode"
+LABEL org.opencontainers.image.description="A Docker image for running Visual Studio Code with various dependencies."
+LABEL org.opencontainers.image.url="https://roelc.me/en/resources/2024/05/26/dockerised-vscode"
+LABEL org.opencontainers.image.source="https://github.com/pixnyb/dockerised-vscode"
 
 # Delete the default 'ubuntu' user
 RUN userdel -r ubuntu || true
@@ -107,6 +111,13 @@ RUN wget -q -O- https://packagecloud.io/dcommander/turbovnc/gpgkey | \
   https://raw.githubusercontent.com/TurboVNC/repo/main/TurboVNC.list \
   && apt-get update && apt-get install -y --no-install-recommends \
   turbovnc \
+  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+# Add some more tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  net-tools iputils-ping dnsutils \
+  htop iotop iftop \
+  nmap tcpdump \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 USER ${USERNAME}

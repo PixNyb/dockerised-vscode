@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "(Re)build and run",
+			"command": "docker compose -f docker-compose.yml down -v && COMPOSE_BAKE=true docker compose -f docker-compose.yml up -d --build",
+			"args": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+	]
+}

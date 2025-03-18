@@ -3,7 +3,7 @@
 set -o pipefail -o nounset
 
 check_docker_socket() {
-	echo "Checking docker socket..."
+	echo "- Checking docker socket..."
     if [ -S /var/run/docker.sock ]; then
 		echo "- Docker socket found..."
         DOCKER_GROUP=$(stat -c '%G' /var/run/docker.sock)
@@ -23,14 +23,13 @@ enable_vnc() {
 	echo "- Checking VNC..."
 	if [[ -n ${ENABLE_VNC-} ]]; then
 		/usr/local/bin/start-vnc.sh
-		echo "- VNC enabled..."
 	fi
 }
 
 configure_msmtp() {
 	echo "- Configuring msmtp..."
     EMAIL=$(echo "$(hostname)" | tr -cd '[:alnum:]_.-' | tr '[:upper:]' '[:lower:]')@mail.dev
-    sudo tee /etc/msmtprc << EOF > /dev/null
+    sudo tee /etc/msmtprc << EOF
 defaults
 auth           off
 tls            off
@@ -44,13 +43,13 @@ EOF
     sudo touch /var/log/msmtp.log
     sudo chmod 777 /var/log/msmtp.log
 
-	echo "Configuring mail..."
-	sudo tee /etc/mail.rc << EOF > /dev/null
+	echo "- Configuring mail..."
+	sudo tee /etc/mail.rc << EOF
 set sendmail="/usr/bin/msmtp"
 EOF
 
 	if [[ -n ${SENDMAIL_USER-} ]]; then
-		sudo tee -a /etc/msmtprc << EOF > /dev/null
+		sudo tee -a /etc/msmtprc << EOF
 user           ${SENDMAIL_USER}
 password       ${SENDMAIL_PASSWORD}
 EOF
@@ -62,16 +61,16 @@ EOF
 copy_home_files() {
     if [[ -d /etc/home ]]; then
 		echo "- Copying home files..."
-        cp -rf /etc/home/* ~ 2>/dev/null
-        cp -rf /etc/home/.[^.]* ~ 2>/dev/null
+        cp -rf /etc/home/* ~
+        cp -rf /etc/home/.[^.]* ~
         if [[ -d ~/.ssh ]]; then
-			echo "Setting permissions on ssh files..."
-            chmod 700 ~/.ssh 2>/dev/null
-            chmod 600 ~/.ssh/* 2>/dev/null
-            chmod 644 ~/.ssh/*.pub 2>/dev/null
-            chmod 644 ~/.ssh/known_hosts 2>/dev/null
-            chmod 600 ~/.ssh/config 2>/dev/null
-            chmod 600 ~/.ssh/authorized_keys 2>/dev/null
+			echo "- Setting permissions on ssh files..."
+            chmod 700 ~/.ssh
+            chmod 600 ~/.ssh/*
+            chmod 644 ~/.ssh/*.pub
+            chmod 644 ~/.ssh/known_hosts
+            chmod 600 ~/.ssh/config
+            chmod 600 ~/.ssh/authorized_keys
         fi
 
 		echo "- Home files copied..."
@@ -79,7 +78,7 @@ copy_home_files() {
 }
 
 setup_github_auth() {
-    if [[ -n ${GITHUB_TOKEN-} ]]; then
+    if [[ -n ${GH_TOKEN-} ]]; then
 		echo "- Setting up github auth..."
         gh auth setup-git
     fi
@@ -172,8 +171,11 @@ clone_repo() {
 			if [[ -n ${REPO_SCRIPT_FILE-} ]]; then
 				echo "- Running post-clone script..."
 
-				if [[ "${REPO_SCRIPT_FILE}" != "${REPO_SCRIPT_FILE/#\//}" ]]; then
-					echo "Warning: The script file is outside of the repo. This may be a security risk."
+                repo_script_path=$(realpath "${REPO_SCRIPT_FILE}")
+                repo_path=$(realpath "${repo_folder}/${project_name}")
+
+                if [[ "${repo_script_path}" != "${repo_path}"* ]]; then
+                    echo "! The script file is outside of the repo. This may be a security risk."
 				fi
 
                 source "./${REPO_SCRIPT_FILE}"
@@ -195,6 +197,7 @@ set_git_config() {
         git_config_key=$(echo "${git_config}" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr '_' '.')
 
         if [[ "${git_config_name}" != "local" ]]; then
+            echo "Setting ${git_config_name} git config ${git_config_key}=${git_config_value}"
             git config --"${git_config_name}" "${git_config_key}" "${git_config_value}"
         fi
     done
@@ -210,6 +213,7 @@ set_local_git_config() {
         git_config_value="${!git_config}"
         git_config_key=$(echo "${git_config}" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr '_' '.')
 
+        echo "Setting local git config ${git_config_key}=${git_config_value}"
         git config --local "${git_config_key}" "${git_config_value}"
     done
 
@@ -236,9 +240,9 @@ start_vscode() {
 
     sleep 3
 
-	echo "Installing extensions..."
+	echo "- Installing extensions..."
     /usr/local/bin/install-extensions.sh
-	echo "Extensions installed..."
+	echo "- Extensions installed..."
     wait $VS_CODE_PID
     fg
 }
@@ -248,7 +252,6 @@ main() {
 	enable_vnc
     configure_msmtp
     copy_home_files
-    sudo service ssh start
     setup_github_auth
     setup_gitlab_auth
     import_gpg_key
@@ -263,6 +266,15 @@ main() {
 		echo "Running init script..."
         curl -sSL "${INIT_SCRIPT_URL}" | bash
 		echo "Init script ran..."
+    fi
+
+    echo "- Starting ssh..."
+    sudo service ssh start
+
+    if [[ $? -ne 0 ]]; then
+        echo "- Failed to start ssh..."
+    else
+        echo "- Ssh started..."
     fi
 
 	start_vscode
