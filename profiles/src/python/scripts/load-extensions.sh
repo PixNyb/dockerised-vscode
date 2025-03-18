@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+EXTENSION_LIST=${EXTENSION_LIST-}
 extensions="ms-python.python,ms-python.debugpy,donjayamanne.python-environment-manager,kevinrose.vsc-python-indent,wholroyd.jinja,batisteo.vscode-django"
 if [ -z "$EXTENSION_LIST" ]; then
 	EXTENSION_LIST=$extensions
