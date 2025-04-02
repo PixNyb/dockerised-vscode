@@ -2,6 +2,15 @@
 
 set -o pipefail -o nounset
 
+read_file_env() {
+    for var in $(env | grep -o '^[^=]*_FILE'); do
+        file_var_name="${var%_FILE}"
+        if [[ -n ${!var} && -f ${!var} ]]; then
+            export "${file_var_name}"="$(<"${!var}")"
+        fi
+    done
+}
+
 check_docker_socket() {
 	echo "- Checking docker socket..."
     if [ -S /var/run/docker.sock ]; then
@@ -94,7 +103,10 @@ setup_gitlab_auth() {
 import_gpg_key() {
     if [[ -n ${GPG_SECRET_KEY-} ]]; then
 		echo "- Importing gpg key..."
-        echo "${GPG_SECRET_KEY}" | base64 -d | gpg --batch --import
+        if ! echo "${GPG_SECRET_KEY}" | base64 -d | gpg --batch --import; then
+            echo "- Failed to import GPG key. Please check the GPG_SECRET_KEY environment variable."
+            return 1
+        fi
 
 		if [[ $? -ne 0 ]]; then
 			echo "- Failed to import gpg key..."
@@ -147,7 +159,10 @@ clone_repo() {
         project_name=$(basename "${REPO_URL}" .git)
 
         mkdir -p "${repo_folder}"
-        git clone "${REPO_URL}" "${repo_folder}/${project_name}"
+        if ! git clone "${REPO_URL}" "${repo_folder}/${project_name}"; then
+            echo "- Failed to clone repo. Please check the REPO_URL environment variable."
+            return 1
+        fi
 
 		if [[ $? -ne 0 ]]; then
 			echo "- Failed to clone repo..."
@@ -204,20 +219,24 @@ set_git_config() {
 }
 
 set_local_git_config() {
-    echo "- Setting local git config..."
+    if [[ -z ${PROJECT_FOLDER-} ]]; then
+        echo "- No project folder found, skipping local git config..."
+    else
+        echo "- Setting local git config..."
 
-    curdir=$(pwd)
-    cd "${PROJECT_FOLDER}"
+        curdir=$(pwd)
+        cd "${PROJECT_FOLDER}"
 
-    env | grep -o '^GIT_LOCAL_[^=]\+' | while read -r git_config; do
-        git_config_value="${!git_config}"
-        git_config_key=$(echo "${git_config}" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr '_' '.')
+        env | grep -o '^GIT_LOCAL_[^=]\+' | while read -r git_config; do
+            git_config_value="${!git_config}"
+            git_config_key=$(echo "${git_config}" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr '_' '.')
 
-        echo "Setting local git config ${git_config_key}=${git_config_value}"
-        git config --local "${git_config_key}" "${git_config_value}"
-    done
+            echo "Setting local git config ${git_config_key} ${git_config_value}"
+            git config --local "${git_config_key}" "${git_config_value}"
+        done
 
-    cd "${curdir}"
+        cd "${curdir}"
+    fi
 }
 
 start_vscode() {
@@ -233,10 +252,17 @@ start_vscode() {
 
 	echo "- Vscode started on pid ${VS_CODE_PID}..."
 
-    while [ -z "$(ls /tmp/code-* 2>/dev/null)" ]; do
+    timeout=30
+    while [ -z "$(ls /tmp/code-* 2>/dev/null)" ] && [ $timeout -gt 0 ]; do
         curl http://localhost:8000 > /dev/null 2>&1
         sleep 1
+        timeout=$((timeout - 1))
     done
+
+    if [ $timeout -eq 0 ]; then
+        echo "- VS Code server failed to start within the timeout period."
+        return 1
+    fi
 
     sleep 3
 
@@ -248,6 +274,7 @@ start_vscode() {
 }
 
 main() {
+    read_file_env
     check_docker_socket
 	enable_vnc
     configure_msmtp

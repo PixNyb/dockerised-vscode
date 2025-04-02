@@ -21,12 +21,17 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
   apt-utils software-properties-common sudo jq \
   libdrm2 libgbm1 libnspr4 libnss3 libxkbfile1 xdg-utils libvulkan1 \
-  gnupg gnome-keyring wget curl python3-minimal ca-certificates \
+  gnupg gnome-keyring wget curl netcat-openbsd python3-minimal ca-certificates \
   git ssh build-essential \
-  unzip zip vim \
+  unzip zip vim nano \
   locales \
   msmtp-mta \
   openbox \
+  tree \
+  tmux \
+  silversearcher-ag ripgrep \
+  iputils-ping lsof \
+  strace \
   rxvt-unicode qutebrowser \
   less mandoc bash-completion \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
