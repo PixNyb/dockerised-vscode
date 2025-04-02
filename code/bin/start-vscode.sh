@@ -2,6 +2,15 @@
 
 set -o pipefail -o nounset
 
+read_file_env() {
+    for var in $(env | grep -o '^[^=]*_FILE'); do
+        file_var_name="${var%_FILE}"
+        if [[ -n ${!var} && -f ${!var} ]]; then
+            export "${file_var_name}"="$(<"${!var}")"
+        fi
+    done
+}
+
 check_docker_socket() {
 	echo "- Checking docker socket..."
     if [ -S /var/run/docker.sock ]; then
@@ -265,6 +274,7 @@ start_vscode() {
 }
 
 main() {
+    read_file_env
     check_docker_socket
 	enable_vnc
     configure_msmtp

@@ -21,7 +21,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
   apt-utils software-properties-common sudo jq \
   libdrm2 libgbm1 libnspr4 libnss3 libxkbfile1 xdg-utils libvulkan1 \
-  gnupg gnome-keyring wget curl netcat python3-minimal ca-certificates \
+  gnupg gnome-keyring wget curl netcat-openbsd python3-minimal ca-certificates \
   git ssh build-essential \
   unzip zip vim nano \
   locales \
