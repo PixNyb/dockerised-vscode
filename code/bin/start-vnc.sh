@@ -2,10 +2,23 @@
 
 set -o pipefail -o nounset
 
+PASSWORD="${VNC_PASSWORD:-}"
+GEOMETRY="${VNC_GEOMETRY:-1920x1080}"
+
+if [ -n "$PASSWORD" ]; then
+  SECURITY="-SecurityTypes VncAuth -PasswordFile $HOME/.vnc/passwd"
+  mkdir -p $HOME/.vnc
+  echo "$PASSWORD" | vncpasswd -f > $HOME/.vnc/passwd
+  chmod 600 $HOME/.vnc/passwd
+else
+  SECURITY="-SecurityTypes None"
+fi
+
+set -o pipefail -o nounset
+
 echo "- Starting VNC server..."
 
 rm -f /tmp/.X*-lock
-/opt/TurboVNC/bin/vncserver -geometry 1920x1080 -depth 24 -rfbport 5900 -SecurityTypes None -xstartup openbox $DISPLAY
-VNC_PID=$!
+/opt/TurboVNC/bin/vncserver -geometry $GEOMETRY -depth 24 -rfbport 5900 $SECURITY -xstartup openbox $DISPLAY
 
-echo "- VNC started on pid ${VNC_PID}..."
+echo "- VNC started..."
