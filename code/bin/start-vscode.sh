@@ -276,7 +276,6 @@ start_vscode() {
 main() {
     read_file_env
     check_docker_socket
-	enable_vnc
     configure_msmtp
     copy_home_files
     setup_github_auth
@@ -303,6 +302,8 @@ main() {
     else
         echo "- Ssh started..."
     fi
+
+	enable_vnc
 
 	start_vscode
 }
