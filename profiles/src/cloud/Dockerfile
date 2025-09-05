@@ -6,11 +6,7 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
     install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
     rm kubectl
 
-RUN curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null && \
-    sudo apt-get install apt-transport-https --yes && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list && \
-    sudo apt-get update && \
-    sudo apt-get install helm -y
+RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 RUN curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-$(dpkg --print-architecture) && \
     install minikube-linux-$(dpkg --print-architecture) /usr/local/bin/minikube && \
@@ -36,7 +32,7 @@ RUN ARCH=$(dpkg --print-architecture) && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-$ARCH.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
-    rm -rf ./aws
+    rm -rf ./aws awscliv2.zip
 
 RUN ARCH=$(dpkg --print-architecture) && \
     if [ "$ARCH" = "amd64" ]; then ARCH="x86_64"; elif [ "$ARCH" = "arm64" ]; then ARCH="arm"; fi && \
@@ -47,7 +43,8 @@ RUN ARCH=$(dpkg --print-architecture) && \
     --usage-reporting false \
     --path-update true \
     --bash-completion true \
-    --rc-path /home/vscode/.bashrc
+    --rc-path /home/vscode/.bashrc && \
+    rm google-cloud-cli-linux-$ARCH.tar.gz
 
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
     az aks install-cli
