@@ -99,7 +99,7 @@ jobs:
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
             ghcr.io/${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
-            nexus.roelc.dev/code:${{ matrix.profile }}
+            nexus.roelc.dev/code:${{ needs.setup.outputs.tag_name }}
           cache-from: type=gha,scope=code
           cache-to: type=gha,mode=max,scope=code
 
