@@ -1,5 +1,5 @@
 DOCKERFILE := .Dockerfile.template
-JAVA_VERSIONS := 8 11 17 21 25 26
+JAVA_VERSIONS := 8 11 17 21 25
 
 .PHONY: all
 all:
