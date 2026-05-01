@@ -8,7 +8,11 @@ EXCLUDED := \
 	profiles/src/php/Dockerfile.7.4 \
 	profiles/src/php/Dockerfile.7.4-node \
 	profiles/src/php/Dockerfile.8.0 \
-	profiles/src/php/Dockerfile.8.0-node
+	profiles/src/php/Dockerfile.8.0-node \
+	profiles/src/php/Dockerfile.8.1 \
+	profiles/src/php/Dockerfile.8.1-node \
+	profiles/src/php/Dockerfile.8.2 \
+	profiles/src/php/Dockerfile.8.2-node \
 
 define DOCKERFILES =
 $(shell find profiles/src -type f -name Dockerfile*)

@@ -1,6 +1,6 @@
 DOCKERFILE := .Dockerfile.template
 NODE_DOCKERFILE := .Dockerfile.node.template
-PHP_VERSIONS := 7.2 7.3 7.4 8.0 8.1 8.2 8.3
+PHP_VERSIONS := 7.2 7.3 7.4 8.0 8.1 8.2 8.3 8.4 8.5
 
 .PHONY: all
 all:
@@ -12,7 +12,7 @@ all:
 			7.2 | 7.3 | 7.4) \
 				XDEBUG=xdebug-2.9.8 \
 				;; \
-			8.0 | 8.1 | 8.2 | 8.3) \
+			8.0 | 8.1 | 8.2 | 8.3 | 8.4 | 8.5) \
 				XDEBUG=xdebug-3.3.2 \
 				;; \
 		esac ; \
