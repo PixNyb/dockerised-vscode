@@ -7,6 +7,16 @@ on:
       - development
   schedule:
     - cron: "0 0 1 * *"
+  workflow_dispatch:
+    inputs:
+      ref_name:
+        description: Branch to build and publish from
+        required: true
+        default: main
+        type: choice
+        options:
+          - main
+          - development
 
 jobs:
   setup:
@@ -17,6 +27,7 @@ jobs:
       is_pr: ${{ steps.pr.outputs.IS_PR }}
       tag_name: ${{ steps.tag.outputs.TAG_NAME }}
       profile_manifest: ${{ steps.manifest.outputs.PROFILE_MANIFEST }}
+      ref_name: ${{ steps.ref.outputs.REF_NAME }}
 
     steps:
       - name: Checkout code
@@ -25,24 +36,35 @@ jobs:
       - name: Make dockerfiles
         run: make
 
+      - name: Determine ref name
+        id: ref
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "REF_NAME=${{ inputs.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "REF_NAME=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Convert repository owner to lowercase
         id: lowercase
-        run: echo "LOWERCASE=$(echo ${{ github.repository_owner }} | awk '{print tolower($0)}')" >> $GITHUB_OUTPUT
+        run: echo "LOWERCASE=$(echo ${{ github.repository_owner }} | awk '{print
+          tolower($0)}')" >> $GITHUB_OUTPUT
 
       - name: Check if currently in a pull request
         id: pr
-        run: echo "IS_PR=$(test -n "${{ github.event.pull_request }}" && echo "true" || echo "false")" >> $GITHUB_OUTPUT
+        run: echo "IS_PR=$(test -n "${{ github.event.pull_request }}" && echo "true" ||
+          echo "false")" >> $GITHUB_OUTPUT
 
       - name: Create the tag name
         id: tag
         run: |
-          if [[ "${{ github.ref_name }}" == "main" ]]; then
+          if [[ "${{ steps.ref.outputs.REF_NAME }}" == "main" ]]; then
             echo "TAG_NAME=latest" >> $GITHUB_OUTPUT
           else
             if [[ "${{ steps.pr.outputs.IS_PR }}" == "true" ]]; then
               echo "TAG_NAME=pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
             else
-              echo "TAG_NAME=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+              echo "TAG_NAME=${{ steps.ref.outputs.REF_NAME }}" >> $GITHUB_OUTPUT
             fi
           fi
 
@@ -97,12 +119,12 @@ jobs:
 
   profiles:
     runs-on: ubuntu-latest
-    needs: [setup, code]
-    if: ${{ github.ref_name }} == 'main'
+    needs: [ setup, code ]
+    if: ${{ needs.setup.outputs.ref_name == 'main' }}
     strategy:
       max-parallel: 3
       matrix:
-        release: [code]
+        release: [ code ]
         profile: ${{ fromJson(needs.setup.outputs.profile_manifest) }}
 
     steps:
