@@ -241,16 +241,34 @@ set_local_git_config() {
 
 start_vscode() {
 	echo "- Starting vscode..."
+
+    # If the PROJECT_FOLDER is available, set the '--default-folder' to it
+    local additional_args=""
+    if [[ -n ${PROJECT_FOLDER-} ]]; then
+        additional_args="--default-folder ${PROJECT_FOLDER}"
+    fi
+
+    # If a workspace exists in the project folder, set the '--workspace' to it
+    if [[ -n ${PROJECT_FOLDER-} ]]; then
+        workspace_file=$(find "${PROJECT_FOLDER}" -maxdepth 1 -type f -name "*.code-workspace" | head -n 1)
+        if [[ -n ${workspace_file-} ]]; then
+            additional_args="${additional_args} --default-workspace ${workspace_file}"
+        fi
+    fi
+
     VSCODE_CLI_USE_FILE_KEYRING=1 VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT=1 \
     code serve-web \
         --disable-telemetry \
         --without-connection-token \
         --accept-server-license-terms \
-        --host 0.0.0.0 &
+        --host 0.0.0.0 \
+        --port 8000 \
+        ${additional_args} \
+        > /tmp/vscode.log 2>&1 &
 
-    VS_CODE_PID=$!
+    VSCODE_PID=$!
 
-	echo "- Vscode started on pid ${VS_CODE_PID}..."
+	echo "- Vscode started on pid ${VSCODE_PID}..."
 
     timeout=30
     while [ -z "$(ls /tmp/code-* 2>/dev/null)" ] && [ $timeout -gt 0 ]; do
@@ -269,7 +287,7 @@ start_vscode() {
 	echo "- Installing extensions..."
     /usr/local/bin/install-extensions.sh
 	echo "- Extensions installed..."
-    wait $VS_CODE_PID
+    wait $VSCODE_PID
     fg
 }
 

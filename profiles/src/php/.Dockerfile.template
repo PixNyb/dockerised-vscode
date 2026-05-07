@@ -2,8 +2,18 @@ FROM pixnyb/%image% AS base
 
 USER root
 
-RUN add-apt-repository ppa:ondrej/php -y && \
-    apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y lsb-release ca-certificates curl && \
+    curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
+    dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
+    tee /etc/apt/sources.list.d/php.sources <<EOF
+Types: deb
+URIs: https://packages.sury.org/php/
+Suites: $(lsb_release -sc)
+Components: main
+Signed-By: /usr/share/keyrings/debsuryorg-archive-keyring.gpg
+    EOF
+
+RUN apt-get update && apt-get install -y \
     php%php-version%-dev \
     php%php-version%-common \
     php%php-version%-cli \
