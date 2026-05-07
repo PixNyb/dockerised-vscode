@@ -21,7 +21,7 @@ RUN mkdir -p /home/vscode/.local/go/bin && \
     mkdir -p /home/vscode/.local/go/src && \
     mkdir -p /home/vscode/.local/go/pkg
 
-RUN apt update && apt install -y golang-go && \
+RUN apt-get update && apt-get install -y golang-go && \
     go install sigs.k8s.io/kind@latest
 
 RUN chmod -R 775 /home/vscode/.local/go && \

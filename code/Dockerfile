@@ -1,5 +1,4 @@
-# Although generally not recommended, ubuntu's latest tag refers to the latest LTS release.
-FROM ubuntu:latest
+FROM ubuntu:24.04
 LABEL maintainer="Roël Couwenberg <contact@roelc.me>"
 LABEL org.opencontainers.image.title="Dockerised VSCode"
 LABEL org.opencontainers.image.description="A Docker image for running Visual Studio Code with various dependencies."
@@ -86,10 +85,10 @@ RUN apt-get install wget gpg -y && \
   install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && \
   echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list && \
   rm -f packages.microsoft.gpg && \
-  apt install apt-transport-https -y && \
-  apt update && \
-  apt install code${CODE_INSIDERS:+-insiders} -y && \
-  apt autoremove -y && apt clean -y && rm -rf /var/lib/apt/lists/*
+  apt-get install apt-transport-https -y && \
+  apt-get update && \
+  apt-get install code${CODE_INSIDERS:+-insiders} -y && \
+  apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # If CODE_INSIDERS is set, link the code-insiders binary to code
 RUN if [ -n "${CODE_INSIDERS}" ]; then ln -s /usr/bin/code-insiders /usr/bin/code; echo "Installed Visual Studio Code Insiders"; fi

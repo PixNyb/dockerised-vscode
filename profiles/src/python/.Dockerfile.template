@@ -2,7 +2,7 @@ FROM pixnyb/%image% AS base
 
 USER root
 
-RUN apt update && apt install -y \
+RUN apt-get update && apt-get install -y \
     python%python-version% \
     python%python-version%-dev \
     python%python-version%-venv \
