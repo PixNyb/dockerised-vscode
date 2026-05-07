@@ -13,7 +13,7 @@ all:
 				XDEBUG=xdebug-2.9.8 \
 				;; \
 			8.0 | 8.1 | 8.2 | 8.3 | 8.4 | 8.5) \
-				XDEBUG=xdebug-3.3.2 \
+				XDEBUG=xdebug-3.5.1 \
 				;; \
 		esac ; \
 		OUTPUT_FILE="Dockerfile.$$version" ; \
