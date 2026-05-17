@@ -9,6 +9,4 @@ RUN apt-get update && apt-get install -y \
 COPY bin/tex/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
 
-# COPY templates/tex/* /etc/templates
-
 USER vscode

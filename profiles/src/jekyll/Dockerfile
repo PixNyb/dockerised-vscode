@@ -21,8 +21,6 @@ RUN apt-get update && apt-get install -y \
 COPY bin/jekyll/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
 
-# COPY templates/jekyll/* /etc/templates
-
 ENV PATH="/home/vscode/.rbenv/bin:/home/vscode/.rbenv/shims:$PATH"
 
 USER vscode

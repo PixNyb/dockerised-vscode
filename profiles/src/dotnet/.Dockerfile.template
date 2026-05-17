@@ -7,8 +7,6 @@ ENV PATH=$PATH:/home/vscode/.dotnet:/home/vscode/.dotnet/tools
 COPY bin/dotnet/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
 
-# COPY templates/dotnet/* /etc/templates
-
 ENV DOTNET_VERSION=%dotnet-version%
 ENV WITH_NODE=false
 

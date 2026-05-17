@@ -75,8 +75,12 @@ export-templates:
 
 .PHONY: generate-json
 generate-json:
-	@echo "[" > profiles/dist/manifest.json; \
-	for file in $(DOCKERFILES); do \
+	@echo "Generating manifest.json..."
+	@echo "$(DOCKERFILES)"
+	@mkdir -p profiles/dist
+	@rm -f profiles/dist/manifest.json
+	@echo "[" > profiles/dist/manifest.json
+	@for file in $(DOCKERFILES); do \
 		echo $$file; \
 		EXCLUDE=0; \
 		for exclude in $(EXCLUDED); do \
@@ -96,9 +100,9 @@ generate-json:
 			fi ; \
 			echo "\"$$PROFILE_TAG\"," >> profiles/dist/manifest.json; \
 		fi; \
-	done; \
-	sed -i '$$ s/.$$//' profiles/dist/manifest.json; \
-	echo "]" >> profiles/dist/manifest.json
+	done
+	@sed -i.bak '$$ s/.$$//' profiles/dist/manifest.json
+	@echo "]" >> profiles/dist/manifest.json
 
 .PHONY: clean
 clean:

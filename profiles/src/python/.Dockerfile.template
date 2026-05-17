@@ -15,8 +15,6 @@ RUN apt-get update && apt-get install -y \
 COPY bin/python/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
 
-# COPY templates/python/* /etc/templates
-
 ENV PYTHON_VERSION=%python-version%
 
 USER vscode

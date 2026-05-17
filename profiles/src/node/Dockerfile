@@ -5,8 +5,6 @@ USER root
 COPY bin/node/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
 
-# COPY templates/php/* /etc/templates
-
 USER vscode
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash \
