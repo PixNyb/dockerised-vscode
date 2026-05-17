@@ -9,6 +9,7 @@ LABEL org.opencontainers.image.source="https://github.com/pixnyb/dockerised-vsco
 RUN userdel -r ubuntu || true
 
 ARG USERNAME=vscode
+ARG DOCKER=true
 ARG CODE_INSIDERS
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -18,21 +19,23 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install the necessary dependencies
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
-  apt-utils software-properties-common sudo jq \
+  # Core utilities
+  apt-utils software-properties-common sudo jq gpg gnupg gnome-keyring wget curl ca-certificates locales \
+  msmtp-mta bash-completion \
+  # Dependencies
   libdrm2 libgbm1 libnspr4 libnss3 libxkbfile1 xdg-utils libvulkan1 \
-  gnupg gnome-keyring wget curl netcat-openbsd python3-minimal ca-certificates \
-  git ssh build-essential \
-  unzip zip vim nano \
-  locales \
-  msmtp-mta \
-  openbox \
-  tree \
-  tmux \
-  silversearcher-ag ripgrep \
-  iputils-ping lsof \
-  strace \
-  rxvt-unicode qutebrowser \
-  less mandoc bash-completion \
+  # Networking tools
+  netcat-openbsd net-tools iputils-ping dnsutils \
+  # Development tools
+  git ssh build-essential python3-minimal unzip zip gh glab \
+  # Text editors and utilities
+  vim nano tree tmux silversearcher-ag ripgrep less mandoc \
+  # System monitoring
+  htop iotop iftop \
+  # Security and debugging
+  strace nmap tcpdump \
+  # GUI and miscellaneous
+  openbox rxvt-unicode qutebrowser \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
   && locale-gen en_US.UTF-8 \
   && dpkg-reconfigure --frontend=noninteractive locales \
@@ -50,28 +53,29 @@ RUN mkdir -p -m 755 /etc/apt/keyrings \
   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
   && curl -sSL "https://raw.githubusercontent.com/upciti/wakemeops/main/assets/install_repository" | sudo bash
 
-# Install other dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  gh glab \
-  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
-
 # Set up ssh by disabling root login and enabling key-based authentication
-RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config \
-  && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config \
-  && sed -i 's/#PermitEmptyPasswords no/PermitEmptyPasswords no/' /etc/ssh/sshd_config \
-  && sed -i 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config \
-  && sed -i 's/#UsePAM yes/UsePAM yes/' /etc/ssh/sshd_config \
-  && sed -i 's/#X11Forwarding yes/X11Forwarding yes/' /etc/ssh/sshd_config \
-  && sed -i 's/#X11UseLocalhost yes/X11UseLocalhost yes/' /etc/ssh/sshd_config \
-  && sed -i 's/#PrintMotd yes/PrintMotd no/' /etc/ssh/sshd_config \
-  && sed -i 's/#PrintLastLog yes/PrintLastLog no/' /etc/ssh/sshd_config \
-  && sed -i 's/#TCPKeepAlive yes/TCPKeepAlive yes/' /etc/ssh/sshd_config \
-  && sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' /etc/ssh/sshd_config \
-  && sed -i 's/#ClientAliveInterval 0/ClientAliveInterval 60/' /etc/ssh/sshd_config \
-  && sed -i 's/#ClientAliveCountMax 3/ClientAliveCountMax 3/' /etc/ssh/sshd_config
+RUN cat > /etc/ssh/sshd_config.d/hardened.conf <<EOF
+PermitRootLogin no
+PasswordAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+UsePAM yes
+X11Forwarding yes
+X11UseLocalhost yes
+PrintMotd no
+PrintLastLog no
+TCPKeepAlive yes
+PermitUserEnvironment yes
+ClientAliveInterval 60
+ClientAliveCountMax 3
+EOF
 
 # Install Docker using https://get.docker.com
-RUN wget -qO- https://get.docker.com | sh
+RUN if [ "$DOCKER" = "true" ]; then \
+  curl -fsSL https://get.docker.com -o get-docker.sh && \
+  sh get-docker.sh && \
+  rm get-docker.sh; \
+  fi
 
 # Add the user to the sudoers file without password
 RUN useradd -m -s /bin/bash ${USERNAME} && \
@@ -80,8 +84,7 @@ RUN useradd -m -s /bin/bash ${USERNAME} && \
   usermod -aG docker ${USERNAME}
 
 # Install Visual Studio Code
-RUN apt-get install wget gpg -y && \
-  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && \
+RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && \
   install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && \
   echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list && \
   rm -f packages.microsoft.gpg && \
@@ -92,6 +95,15 @@ RUN apt-get install wget gpg -y && \
 
 # If CODE_INSIDERS is set, link the code-insiders binary to code
 RUN if [ -n "${CODE_INSIDERS}" ]; then ln -s /usr/bin/code-insiders /usr/bin/code; echo "Installed Visual Studio Code Insiders"; fi
+
+# Setup turbovnc
+RUN wget -q -O- https://packagecloud.io/dcommander/turbovnc/gpgkey | \
+  gpg --dearmor >/etc/apt/trusted.gpg.d/TurboVNC.gpg \
+  && wget -q -O /etc/apt/sources.list.d/turbovnc.list \
+  https://raw.githubusercontent.com/TurboVNC/repo/main/TurboVNC.list \
+  && apt-get update && apt-get install -y --no-install-recommends \
+  turbovnc \
+  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Include binaries
 COPY bin/* /usr/local/bin/
@@ -108,44 +120,19 @@ RUN mkdir -p /etc/home
 RUN mkdir -p /home/${USERNAME}/.local/bin \
   && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
-# Setup turbovnc
-RUN wget -q -O- https://packagecloud.io/dcommander/turbovnc/gpgkey | \
-  gpg --dearmor >/etc/apt/trusted.gpg.d/TurboVNC.gpg \
-  && wget -q -O /etc/apt/sources.list.d/turbovnc.list \
-  https://raw.githubusercontent.com/TurboVNC/repo/main/TurboVNC.list \
-  && apt-get update && apt-get install -y --no-install-recommends \
-  turbovnc \
-  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
-
-# Add some more tools
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  net-tools iputils-ping dnsutils \
-  htop iotop iftop \
-  nmap tcpdump \
-  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
-
 USER ${USERNAME}
 ENV USER=${USERNAME}
 
 # Add the /home/${USERNAME}/.local/bin directory to the PATH
 ENV PATH="/home/${USERNAME}/.local/bin:${PATH}"
 
-COPY .gitignore /home/${USERNAME}/.gitignore
-COPY .gitmessage /home/${USERNAME}/.gitmessage
-
-# Setup Git configuration
-RUN git config --global commit.template ~/.gitmessage \
-  && git config --global init.defaultBranch main \
-  && git config --global pull.rebase true \
-  && git config --global push.autoSetupRemote true \
-  && git config --global rebase.autoStash true \
-  && git config --global core.editor "vim" \
-  && git config --global core.excludesfile ~/.gitignore
+COPY .gitignore .gitmessage .gitconfig /home/${USERNAME}
 
 WORKDIR /home/${USERNAME}
 
 ENTRYPOINT [ "/usr/local/bin/start-vscode.sh" ]
 
-HEALTHCHECK --interval=15s --timeout=5s --start-period=15m --retries=30 CMD [ "/usr/local/bin/healthcheck-vscode.sh" ]
+HEALTHCHECK --interval=15s --timeout=5s --start-period=15m --retries=30 \
+  CMD [ "/usr/local/bin/healthcheck-vscode.sh" ]
 
 EXPOSE 8000 22 5900

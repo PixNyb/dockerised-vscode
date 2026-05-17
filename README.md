@@ -81,7 +81,6 @@ When running the container, you can pass the following environment variables to 
 - `REPO_URL`: The URL of the Git repository to clone when the container starts. (Optional)
 - `REPO_FOLDER`: The folder to clone the Git repository into. (e.g. ~/projects) (Optional)
 - `REPO_BRANCH`: The branch of the Git repository to clone. (Optional)
-- `INIT_SCRIPT_URL`: The URL of a shell script to run when the container starts. (Optional)
 - `REPO_SCRIPT_FILE`: The path to the script that should be run after cloning a git repo. (Optional)
 - `EXTENSION_LIST`: A list of Visual Studio Code extensions to install separated by commas. (Optional, e.g `ms-python.python,ms-vscode.cpptools`)
 - `EXTENSION_LIST_URL`: The URL of a file containing a list of Visual Studio Code extensions to install separated by newlines. (Optional, e.g. `https://example.com/extensions.txt`)
@@ -99,9 +98,6 @@ When running the container, you can pass the following environment variables to 
 
 > [!NOTE]
 > Additional environment variables to configure GitLab CLI can be found [here](https://gitlab.com/gitlab-org/cli#environment-variables).
-
-> [!NOTE]
-> The `INIT_SCRIPT_URL` environment variable can be used to run a shell script when the container starts. This can be used to install additional tools and extensions specific to your needs. Keep in mind the `/usr/local/bin/initialise-vscode.sh` script is run after the `INIT_SCRIPT_URL` script. This allows you to start with a base setup and then customise it further according to your needs.
 
 > [!NOTE]
 > The `REPO_SCRIPT_FILE` environment variable can be used to run a shell script after cloning a git repository. This can be used to install additional tools and extensions specific to your needs, or run environment setup scripts. The script will be run in and is relative to the repository folder.
@@ -183,7 +179,6 @@ services:
       - GH_TOKEN=<...>
       - GPG_SECRET_KEY=<...>
       - REPO_URL=<...>
-      - INIT_SCRIPT_URL=https://example.com/init.sh
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro

@@ -1,0 +1,15 @@
+[init]
+        defaultBranch = main
+[pull]
+        rebase = true
+[push]
+        autoSetupRemote = true
+[rebase]
+        autoStash = true
+[core]
+        editor = vim
+        excludesFile = ~/.gitignore
+[commit]
+        template = ~/.gitmessage
+[diff]
+        colorMoved = default

@@ -70,8 +70,8 @@ EOF
 copy_home_files() {
     if [[ -d /etc/home ]]; then
 		echo "- Copying home files..."
-        cp -rf /etc/home/* ~
-        cp -rf /etc/home/.[^.]* ~
+        cp -rf /etc/home/* ~ 2>/dev/null || true
+        cp -rf /etc/home/.[^.]* ~ 2>/dev/null || true
         if [[ -d ~/.ssh ]]; then
 			echo "- Setting permissions on ssh files..."
             chmod 700 ~/.ssh
@@ -190,11 +190,13 @@ clone_repo() {
                 repo_path=$(realpath "${repo_folder}/${project_name}")
 
                 if [[ "${repo_script_path}" != "${repo_path}"* ]]; then
-                    echo "! The script file is outside of the repo. This may be a security risk."
-				fi
-
-                source "./${REPO_SCRIPT_FILE}"
-				echo "- Post-clone script ran..."
+                    echo "! The script file is outside of the repo folder. Please check the REPO_SCRIPT_FILE environment variable."
+                    echo "! The script file must be inside the repo folder for security reasons."
+                    echo "! Skipping running the post-clone script..."
+				else
+                    source "./${REPO_SCRIPT_FILE}"
+				    echo "- Post-clone script ran..."
+                fi
             fi
 
 			export PROJECT_BRANCH="${REPO_BRANCH}"
@@ -240,7 +242,8 @@ set_local_git_config() {
 }
 
 start_vscode() {
-	echo "- Starting vscode..."
+	echo "- Starting VS Code..."
+    local additional_args=""
 
     # If the PROJECT_FOLDER is available, set the '--default-folder' to it
     local additional_args=""
@@ -256,19 +259,17 @@ start_vscode() {
         fi
     fi
 
-    VSCODE_CLI_USE_FILE_KEYRING=1 VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT=1 \
     code serve-web \
         --disable-telemetry \
         --without-connection-token \
         --accept-server-license-terms \
         --host 0.0.0.0 \
         --port 8000 \
-        ${additional_args} \
-        > /tmp/vscode.log 2>&1 &
+        ${additional_args} &
 
     VSCODE_PID=$!
 
-	echo "- Vscode started on pid ${VSCODE_PID}..."
+	echo "- VS Code started on pid ${VSCODE_PID}..."
 
     timeout=30
     while [ -z "$(ls /tmp/code-* 2>/dev/null)" ] && [ $timeout -gt 0 ]; do
@@ -306,23 +307,16 @@ main() {
     source /usr/local/bin/load-extensions.sh
     /usr/local/bin/initialise-vscode.sh
 
-	if [ -n "${INIT_SCRIPT_URL-}" ]; then
-		echo "Running init script..."
-        curl -sSL "${INIT_SCRIPT_URL}" | bash
-		echo "Init script ran..."
-    fi
-
-    echo "- Starting ssh..."
+    echo "- Starting SSH server..."
     sudo service ssh start
 
     if [[ $? -ne 0 ]]; then
-        echo "- Failed to start ssh..."
+        echo "- Failed to start SSH server..."
     else
-        echo "- Ssh started..."
+        echo "- SSH server started..."
     fi
 
 	enable_vnc
-
 	start_vscode
 }
 
