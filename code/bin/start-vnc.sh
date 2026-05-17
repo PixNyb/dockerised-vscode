@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o pipefail -o nounset
+set -eou pipefail
 
 PASSWORD="${VNC_PASSWORD:-}"
 GEOMETRY="${VNC_GEOMETRY:-1920x1080}"
@@ -13,8 +13,6 @@ if [ -n "$PASSWORD" ]; then
 else
   SECURITY="-SecurityTypes None"
 fi
-
-set -o pipefail -o nounset
 
 echo "- Starting VNC server..."
 

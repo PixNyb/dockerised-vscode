@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o pipefail -o nounset
+set -eou pipefail
 
 EXTENSION_LIST=${EXTENSION_LIST-}
 EXTENSION_LIST_URL=${EXTENSION_LIST_URL-}
