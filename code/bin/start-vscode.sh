@@ -213,11 +213,17 @@ set_git_config() {
         git_config_name=$(echo "${git_config}" | cut -d_ -f2 | tr '[:upper:]' '[:lower:]')
         git_config_key=$(echo "${git_config}" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr '_' '.')
 
+        echo "Processing ${git_config_name} git config ${git_config_key}=${git_config_value}"
+
         if [[ "${git_config_name}" != "local" ]]; then
             echo "Setting ${git_config_name} git config ${git_config_key}=${git_config_value}"
-            git config --"${git_config_name}" "${git_config_key}" "${git_config_value}"
+            if ! git config --"${git_config_name}" "${git_config_key}" "${git_config_value}"; then
+                echo "! Error setting ${git_config_name} git config ${git_config_key}=${git_config_value}"
+            fi
         fi
     done
+
+    echo "- Global git config set..."
 }
 
 set_local_git_config() {
@@ -238,6 +244,8 @@ set_local_git_config() {
         done
 
         cd "${curdir}"
+
+        echo "- Local git config set..."
     fi
 }
 
@@ -251,8 +259,10 @@ start_vscode() {
         additional_args="--default-folder ${PROJECT_FOLDER}"
     fi
 
-    # If a workspace exists in the project folder, set the '--workspace' to it
-    if [[ -n ${PROJECT_FOLDER-} ]]; then
+    # If a workspace is explicitly provided, use it; otherwise, use the first one in the project folder
+    if [[ -n ${PROJECT_WORKSPACE-} ]]; then
+        additional_args="${additional_args} --default-workspace ${PROJECT_WORKSPACE}"
+    elif [[ -n ${PROJECT_FOLDER-} ]]; then
         workspace_file=$(find "${PROJECT_FOLDER}" -maxdepth 1 -type f -name "*.code-workspace" | head -n 1)
         if [[ -n ${workspace_file-} ]]; then
             additional_args="${additional_args} --default-workspace ${workspace_file}"
