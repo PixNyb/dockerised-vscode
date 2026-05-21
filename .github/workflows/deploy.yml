@@ -76,13 +76,16 @@ jobs:
   code:
     runs-on: ubuntu-latest
     needs: setup
+    env:
+      DOCKER_CLOUD: ${{ vars.DOCKER_CLOUD }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Buildx locally
         uses: docker/setup-buildx-action@v3
+        if: ${{ env.DOCKER_CLOUD != 'true' }}
 
       - name: Login to Docker Container Registry
         uses: docker/login-action@v3
@@ -97,8 +100,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Buildx in Docker Cloud
         uses: docker/setup-buildx-action@v3
+        if: ${{ env.DOCKER_CLOUD == 'true' }}
         with:
           driver: cloud
           endpoint: "pixnyb/builder-1"
@@ -120,6 +124,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [setup, code]
     if: ${{ needs.setup.outputs.ref_name == 'main' }}
+    env:
+      DOCKER_CLOUD: ${{ vars.DOCKER_CLOUD }}
     strategy:
       max-parallel: 3
       matrix:
@@ -136,8 +142,9 @@ jobs:
       - name: List files
         run: ls profiles/dist/${{ matrix.release }}
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Buildx locally
         uses: docker/setup-buildx-action@v3
+        if: ${{ env.DOCKER_CLOUD != 'true' }}
 
       - name: Login to Docker Registry
         uses: docker/login-action@v3
@@ -152,8 +159,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Buildx in Docker Cloud
         uses: docker/setup-buildx-action@v3
+        if: ${{ env.DOCKER_CLOUD == 'true' }}
         with:
           driver: cloud
           endpoint: "pixnyb/builder-1"
