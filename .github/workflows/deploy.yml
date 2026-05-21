@@ -5,6 +5,12 @@ on:
     branches:
       - main
       - development
+    paths-ignore:
+      - ".github/**"
+      - ".vscode/**"
+      - "docs/**"
+      - "**/*.md"
+      - ".gitignore"
   schedule:
     - cron: "0 0 1 * *"
   workflow_dispatch:
@@ -21,6 +27,10 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_HOST: ${{ vars.DOCKER_HOST }}
+      DOCKER_TLS_VERIFY: ${{ vars.DOCKER_TLS_VERIFY }}
+      DOCKER_CERT_PATH: ${{ vars.DOCKER_CERT_PATH }}
 
     outputs:
       lowercase: ${{ steps.lowercase.outputs.LOWERCASE }}
@@ -78,6 +88,9 @@ jobs:
     needs: setup
     env:
       DOCKER_CLOUD: ${{ vars.DOCKER_CLOUD }}
+      DOCKER_HOST: ${{ vars.DOCKER_HOST }}
+      DOCKER_TLS_VERIFY: ${{ vars.DOCKER_TLS_VERIFY }}
+      DOCKER_CERT_PATH: ${{ vars.DOCKER_CERT_PATH }}
 
     steps:
       - name: Checkout code
@@ -100,6 +113,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Login to Forgejo Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: git.roelc.dev
+          username: ${{ vars.FORGEJO_USERNAME }}
+          password: ${{ secrets.FORGEJO_TOKEN }}
+
       - name: Set up Docker Buildx in Docker Cloud
         uses: docker/setup-buildx-action@v3
         if: ${{ env.DOCKER_CLOUD == 'true' }}
@@ -117,6 +137,7 @@ jobs:
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
             ghcr.io/${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
+            git.roelc.me/${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
           cache-from: type=gha,scope=code
           cache-to: type=gha,mode=max,scope=code
 
@@ -126,6 +147,9 @@ jobs:
     if: ${{ needs.setup.outputs.ref_name == 'main' }}
     env:
       DOCKER_CLOUD: ${{ vars.DOCKER_CLOUD }}
+      DOCKER_HOST: ${{ vars.DOCKER_HOST }}
+      DOCKER_TLS_VERIFY: ${{ vars.DOCKER_TLS_VERIFY }}
+      DOCKER_CERT_PATH: ${{ vars.DOCKER_CERT_PATH }}
     strategy:
       max-parallel: 3
       matrix:
@@ -159,6 +183,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Login to Forgejo Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: git.roelc.dev
+          username: ${{ vars.FORGEJO_USERNAME }}
+          password: ${{ secrets.FORGEJO_TOKEN }}
+
       - name: Set up Docker Buildx in Docker Cloud
         uses: docker/setup-buildx-action@v3
         if: ${{ env.DOCKER_CLOUD == 'true' }}
@@ -177,5 +208,6 @@ jobs:
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:${{ matrix.profile }}
             ghcr.io/${{ needs.setup.outputs.lowercase }}/code:${{ matrix.profile }}
+            git.roelc.me/${{ needs.setup.outputs.lowercase }}/code:${{ matrix.profile }}
           cache-from: type=gha,scope=${{ matrix.release }}-${{ matrix.profile }}
           cache-to: type=gha,mode=max,scope=${{ matrix.release }}-${{ matrix.profile }}
