@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eou pipefail
+set -o pipefail -o nounset
 
 read_file_env() {
     for var in $(env | grep -o '^[^=]*_FILE'); do

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eou pipefail
+set -o pipefail -o nounset
 
 PASSWORD="${VNC_PASSWORD:-}"
 GEOMETRY="${VNC_GEOMETRY:-1920x1080}"
