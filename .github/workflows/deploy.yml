@@ -137,7 +137,7 @@ jobs:
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
             ghcr.io/${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
-            git.roelc.me/${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
+            git.roelc.dev/${{ needs.setup.outputs.lowercase }}/code:${{ needs.setup.outputs.tag_name }}
           cache-from: type=gha,scope=code
           cache-to: type=gha,mode=max,scope=code
 
@@ -208,6 +208,6 @@ jobs:
           tags: |
             ${{ needs.setup.outputs.lowercase }}/code:${{ matrix.profile }}
             ghcr.io/${{ needs.setup.outputs.lowercase }}/code:${{ matrix.profile }}
-            git.roelc.me/${{ needs.setup.outputs.lowercase }}/code:${{ matrix.profile }}
+            git.roelc.dev/${{ needs.setup.outputs.lowercase }}/code:${{ matrix.profile }}
           cache-from: type=gha,scope=${{ matrix.release }}-${{ matrix.profile }}
           cache-to: type=gha,mode=max,scope=${{ matrix.release }}-${{ matrix.profile }}
