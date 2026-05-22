@@ -82,6 +82,29 @@ copy_home_files() {
             chmod 600 ~/.ssh/authorized_keys
         fi
 
+        if [[ -d ~/.gnupg ]]; then
+            echo "- Setting permissions on gpg files..."
+            chmod 700 ~/.gnupg
+            chmod 600 ~/.gnupg/*
+        fi
+
+        if [[ -f ~/.gitconfig ]]; then
+            echo "- Setting permissions on gitconfig..."
+            chmod 600 ~/.gitconfig
+        fi
+
+        if [[ -f ~/.msmtprc ]]; then
+            echo "- Setting permissions on msmtprc..."
+            chmod 600 ~/.msmtprc
+        fi
+
+        if [[ -f ~/.netrc ]]; then
+            echo "- Setting permissions on netrc..."
+            chmod 600 ~/.netrc
+        fi
+
+        sudo chown -R "$(id -u)":"$(id -g)" ~
+
 		echo "- Home files copied..."
     fi
 }

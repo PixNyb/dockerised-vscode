@@ -8,7 +8,8 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
 
 RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4 && \
     chmod 700 get_helm.sh && \
-    ./get_helm.sh
+    ./get_helm.sh && \
+    rm get_helm.sh
 
 RUN curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-$(dpkg --print-architecture) && \
     install minikube-linux-$(dpkg --print-architecture) /usr/local/bin/minikube && \
@@ -21,13 +22,12 @@ ENV GOPATH=/home/vscode/go
 ENV PATH=$PATH:/home/vscode/.local/go/bin:$GOPATH/bin
 
 RUN mkdir -p ${GOROOT} && \
-    mkdir -p ${GOPATH}
+    mkdir -p ${GOPATH}/{bin,pkg,src}
 
 RUN curl -L https://go.dev/dl/$(curl -s https://go.dev/VERSION?m=text | head -n 1).linux-$(dpkg --print-architecture).tar.gz -o go.tar.gz && \
     tar -xf go.tar.gz -C ${GOROOT} --strip-components=1 && \
     rm go.tar.gz && \
-    chown -R vscode:vscode ${GOROOT} ${GOPATH} && \
-    go install sigs.k8s.io/kind@latest
+    chown -R vscode:vscode ${GOROOT} ${GOPATH}
 
 RUN ARCH=$(dpkg --print-architecture) && \
     if [ "$ARCH" = "amd64" ]; then ARCH="x86_64"; elif [ "$ARCH" = "arm64" ]; then ARCH="aarch64"; fi && \
@@ -55,3 +55,5 @@ COPY bin/cloud/* /usr/local/bin
 RUN chmod +x /usr/local/bin/*
 
 USER vscode
+
+RUN go install sigs.k8s.io/kind@latest
