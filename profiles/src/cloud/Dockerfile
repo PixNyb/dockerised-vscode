@@ -34,7 +34,8 @@ RUN ARCH=$(dpkg --print-architecture) && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-$ARCH.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
-    rm -rf ./aws awscliv2.zip
+    rm -rf ./aws awscliv2.zip && \
+    echo "complete -C '/usr/local/bin/aws_completer' aws" >> /home/vscode/.bashrc
 
 RUN ARCH=$(dpkg --print-architecture) && \
     if [ "$ARCH" = "amd64" ]; then ARCH="x86_64"; elif [ "$ARCH" = "arm64" ]; then ARCH="arm"; fi && \
@@ -54,6 +55,7 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
 RUN wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list && \
     sudo apt-get update && sudo apt-get install terraform && \
+    terraform -install-autocomplete && \
     sudo apt-get autoremove -y && sudo apt-get clean -y && sudo rm -rf /var/lib/apt/lists/*
 
 COPY bin/cloud/* /usr/local/bin
